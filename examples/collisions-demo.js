@@ -195,16 +195,46 @@ export class Inertia_Demo extends Simulation {
     // carry several bodies until they fall due to gravity and bounce.
     constructor() {
         super();
+        this.bounce=false;
+        this.ball_matrix = Mat4.identity().times(Mat4.rotation(-1.59820846, 0, 0, 1)).times(Mat4.translation(0, 3  , 6)).times(Mat4.rotation(Math.PI, 0, 0, 1));
         this.data = new Test_Data();
         this.shapes = Object.assign({}, this.data.shapes);
         this.shapes.square = new defs.Square();
         const shader = new defs.Fake_Bump_Map(1);
         this.material = new Material(shader, {
             color: color(.4, .8, .4, 1),
-            ambient: .4, texture: this.data.textures.stars
+            ambient: .4, //texture: this.data.textures.stars
         })
     }
 
+    move_left() {
+            this.ball_matrix = this.ball_matrix.times(Mat4.translation(0,2,0));
+    }
+
+    move_right() {
+            this.ball_matrix = this.ball_matrix.times(Mat4.translation(0,-2,0));
+    }
+
+    move_up() {
+            this.ball_matrix = this.ball_matrix.times(Mat4.translation(2,0,0));
+    }
+
+    move_down() {
+            this.ball_matrix = this.ball_matrix.times(Mat4.translation(-2,0,0));
+    }
+
+    bounce(){
+        const t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000;
+        // let ball_angle=-Math.PI*t;
+        let ball_angle = Math.PI / 2 + Math.sin(3 * t + Math.PI / 2);
+        if (t <= 0.9) {
+            ball_angle = Math.PI / 2 + Math.sin(3 * t + Math.PI / 2);
+        } else {
+            ball_angle = Math.PI / 2 + Math.sin(3 * 0.9 + Math.PI / 2)
+        }
+        this.ball_matrix = this.ball_matrix.times(Mat4.rotation(-ball_angle, 0, 0, 1)).times(Mat4.translation(0, 3 + 5 * t, 6)).times(Mat4.rotation(Math.PI, 0, 0, 1))
+            .times(Mat4.scale(1, 1, 1));
+    }
     random_color() {
         return this.material.override(color(.6, .6 * Math.random(), .6 * Math.random(), 1));
     }
@@ -300,6 +330,14 @@ export class Inertia_Demo extends Simulation {
                 .times(Mat4.scale(0.7, 3.9, 0.5)), this.material.override({color: blue}));
         }
     }
+    //bounce the ball button
+    make_control_panel() {
+        this.key_triggered_button("bounce the ball", ["q"], () => this.bounce());
+        this.key_triggered_button("right", ["d"], () => this.move_right());
+        this.key_triggered_button("left", ["a"], () => this.move_left());
+        this.key_triggered_button("up", ["w"], () => this.move_up());
+        this.key_triggered_button("down", ["s"], () => this.move_down());
+    }
 
     display(context, program_state) {
         // display(): Draw everything else in the scene besides the moving bodies.
@@ -316,13 +354,13 @@ export class Inertia_Demo extends Simulation {
         //Building side walls
         let model_transform = Mat4.identity();
         const black = color(1, 0, 0, 1)
-        const white = color(0.2,0,0,1)
+        const white = color(0.2, 0, 0, 1)
         // //Draw side wall on top
         // let topWall_tranform = model_transform;
         // topWall_tranform = topWall_tranform.times(Mat4.translation(0, 13, 0))
         //                                    .times(Mat4.rotation(Math.PI/1.2, 1, 0, 0))
         //                                    .times(Mat4.scale(14, 0.3, 0.5))
-        
+
         // this.shapes.cube.draw(context, program_state, topWall_tranform, this.material.override({color: black}));
         // //Draw first side wall on right
 
@@ -332,22 +370,38 @@ export class Inertia_Demo extends Simulation {
         //                                 .times(Mat4.scale(0.7, 8, 0.5))
         // this.shapes.cube.draw(context, program_state, side1_transform, this.material.override({color: white}));
         // Draw the ground:
+
+
         //Draw ball
-        const t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000;
+        //const t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000;
         // let ball_angle=-Math.PI*t;
-        let ball_angle= Math.PI/2+Math.sin(3*t+Math.PI/2);
-        if(t<=0.9){
-            ball_angle =Math.PI/2+Math.sin(3*t+Math.PI/2);
-        }else{
-            ball_angle = Math.PI/2+Math.sin(3*0.9+Math.PI/2)
-        }
+        //let ball_angle = Math.PI / 2 + Math.sin(3 * t + Math.PI / 2);
+        //if (t <= 0.9) {
+        //    ball_angle = Math.PI / 2 + Math.sin(3 * t + Math.PI / 2);
+        //} else {
+            //    ball_angle = Math.PI / 2 + Math.sin(3 * 0.9 + Math.PI / 2)
+        //}
         //if(ball_angle>)
         //console.log(t);
-        let model_trans_rotate=Mat4.rotation(-ball_angle,0,0,1).times(Mat4.translation(0, 3-5*t, 6)).times(Mat4.rotation(Math.PI,0,0,1))
-            .times(Mat4.scale(1,1,1))
+        let model_transform_ball = this.ball_matrix;
+        this.shapes.sphere.draw(context, program_state, model_transform_ball, this.material.override({color: color(1, 0, 0, 1)}));
+        //this.bounce=false;
+        /*
+        let model_trans_rotate = Mat4.identity();
+        if (this.bounce == true) {
+            model_trans_rotate = model_trans_rotate.times(Mat4.rotation(-ball_angle, 0, 0, 1)).times(Mat4.translation(0, 3 + 5 * t, 6)).times(Mat4.rotation(Math.PI, 0, 0, 1))
+            .times(Mat4.scale(1, 1, 1));
         //if(ball_angle != 1){
-            this.shapes.sphere.draw(context, program_state,model_trans_rotate , this.material.override({color: color(1, 0,0, 1)}));
-            
+        this.shapes.sphere.draw(context, program_state, model_trans_rotate, this.material.override({color: color(1, 0, 0, 1)}));
+            //this.bounce=false;
+
+    }else{
+            let model_trans_rotate2 = Mat4.identity();
+             model_trans_rotate2 = model_trans_rotate2.times(Mat4.rotation(-ball_angle, 0, 0, 1)).times(Mat4.translation(0, 3 - 5 * t, 6)).times(Mat4.rotation(Math.PI, 0, 0, 1))
+                .times(Mat4.scale(1, 1, 1))
+            this.shapes.sphere.draw(context, program_state, model_trans_rotate2, this.material.override({color: color(1, 0, 0, 1)}));
+        }*/
+
 /*
         }else{
             let model_transform_sphere = Mat4.identity();
@@ -356,12 +410,12 @@ export class Inertia_Demo extends Simulation {
             this.shapes.sphere.draw(context, program_state, model_transform_sphere, this.material.override({color: color(1, 0,0, 1)}));
         }*/
         let table_transform = model_transform;
-        table_transform = table_transform.times(Mat4.translation(0, 0, 0))
+        table_transform = table_transform.times(Mat4.translation(0, 0, 5))
                                          .times(Mat4.rotation(Math.PI, 1, 0, 0))
                                          .times(Mat4.scale(14, 16, 1))
         
 
-        this.shapes.cube.draw(context, program_state, table_transform,this.material.override(this.data.textures.earth));
+        this.shapes.cube.draw(context, program_state, table_transform,this.material.override({color: color(1,1,0,1)}));
 
         const gold = color(1, 0.876, 0, 1);
         this.shapes.cube.draw(context, program_state,Mat4.translation(0,  15, 7)
