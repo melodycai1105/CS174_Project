@@ -229,6 +229,78 @@ export class Inertia_Demo extends Simulation {
         this.bodies = this.bodies.filter(b => b.center.norm() < 50 && b.linear_velocity.norm() > 2);
     }
 
+    generateWalls(context, program_state, count){
+        const white = color(1, 1, 1, 1);
+        const black = color(0, 0, 0, 1);
+        const red = color(1, 0, 0, 1);
+        const blue = color(0, 0, 1, 1);
+
+        if(count == 0) {
+            //right side wall
+            this.shapes.cube.draw(context, program_state, Mat4.translation(13.3, 7.5, 7)
+                .times(Mat4.rotation(Math.PI, 1, 0, 0))
+                .times(Mat4.scale(0.7, 7, 0.5)), this.material.override({color: white}));
+            this.shapes.cube.draw(context, program_state, Mat4.translation(13.3, -7, 7)
+                .times(Mat4.rotation(Math.PI, 1, 0, 0))
+                .times(Mat4.scale(0.7, 7.5, 0.5)), this.material.override({color: black}));
+            //left side wall
+            this.shapes.cube.draw(context, program_state, Mat4.translation(-13.3, 9.8, 7)
+                .times(Mat4.rotation(Math.PI, 1, 0, 0))
+                .times(Mat4.scale(0.7, 4.8, 0.5)), this.material.override({color: white}));
+            this.shapes.cube.draw(context, program_state, Mat4.translation(-13.3, -4.8, 7)
+                .times(Mat4.rotation(Math.PI, 1, 0, 0))
+                .times(Mat4.scale(0.7, 9.8, 0.5)), this.material.override({color: black}));
+        }else if(count == 1){
+            //right side wall
+            this.shapes.cube.draw(context, program_state, Mat4.translation(13.3, 10.5, 7)
+                .times(Mat4.rotation(Math.PI, 1, 0, 0))
+                .times(Mat4.scale(0.7, 4, 0.5)), this.material.override({color: white}));
+            this.shapes.cube.draw(context, program_state, Mat4.translation(13.3, 3.5, 7)
+                .times(Mat4.rotation(Math.PI, 1, 0, 0))
+                .times(Mat4.scale(0.7, 3, 0.5)), this.material.override({color: black}));
+            this.shapes.cube.draw(context, program_state, Mat4.translation(13.3, -7, 7)
+                .times(Mat4.rotation(Math.PI, 1, 0, 0))
+                .times(Mat4.scale(0.7, 7.5, 0.5)), this.material.override({color: red}));
+            //left side wall
+            this.shapes.cube.draw(context, program_state, Mat4.translation(-13.3, 9.5, 7)
+                .times(Mat4.rotation(Math.PI, 1, 0, 0))
+                .times(Mat4.scale(0.7, 5, 0.5)), this.material.override({color: white}));
+            this.shapes.cube.draw(context, program_state, Mat4.translation(-13.3, -1.5, 7)
+                .times(Mat4.rotation(Math.PI, 1, 0, 0))
+                .times(Mat4.scale(0.7, 6, 0.5)), this.material.override({color: black}));
+            this.shapes.cube.draw(context, program_state, Mat4.translation(-13.3, -11, 7)
+                .times(Mat4.rotation(Math.PI, 1, 0, 0))
+                .times(Mat4.scale(0.7, 3.5, 0.5)), this.material.override({color: red}));
+       }else if(count == 2){
+            //right side wall
+            this.shapes.cube.draw(context, program_state, Mat4.translation(13.3, 11.5, 7)
+                .times(Mat4.rotation(Math.PI, 1, 0, 0))
+                .times(Mat4.scale(0.7, 3, 0.5)), this.material.override({color: white}));
+            this.shapes.cube.draw(context, program_state, Mat4.translation(13.3, 4.5, 7)
+                .times(Mat4.rotation(Math.PI, 1, 0, 0))
+                .times(Mat4.scale(0.7, 4, 0.5)), this.material.override({color: black}));
+            this.shapes.cube.draw(context, program_state, Mat4.translation(13.3, -4.5, 7)
+                .times(Mat4.rotation(Math.PI, 1, 0, 0))
+                .times(Mat4.scale(0.7, 5, 0.5)), this.material.override({color: red}));
+            this.shapes.cube.draw(context, program_state, Mat4.translation(13.3, -12, 7)
+                .times(Mat4.rotation(Math.PI, 1, 0, 0))
+                .times(Mat4.scale(0.7, 2.5, 0.5)), this.material.override({color: blue}));
+            //left side wall
+            this.shapes.cube.draw(context, program_state, Mat4.translation(-13.3, 12.5, 7)
+                .times(Mat4.rotation(Math.PI, 1, 0, 0))
+                .times(Mat4.scale(0.7, 2, 0.5)), this.material.override({color: white}));
+            this.shapes.cube.draw(context, program_state, Mat4.translation(-13.3, 4.5, 7)
+                .times(Mat4.rotation(Math.PI, 1, 0, 0))
+                .times(Mat4.scale(0.7, 6, 0.5)), this.material.override({color: black}));
+            this.shapes.cube.draw(context, program_state, Mat4.translation(-13.3, -4, 7)
+                .times(Mat4.rotation(Math.PI, 1, 0, 0))
+                .times(Mat4.scale(0.7, 2.5, 0.5)), this.material.override({color: red}));
+            this.shapes.cube.draw(context, program_state, Mat4.translation(-13.3, -10.4, 7)
+                .times(Mat4.rotation(Math.PI, 1, 0, 0))
+                .times(Mat4.scale(0.7, 3.9, 0.5)), this.material.override({color: blue}));
+        }
+    }
+
     display(context, program_state) {
         // display(): Draw everything else in the scene besides the moving bodies.
         super.display(context, program_state);
@@ -275,6 +347,7 @@ export class Inertia_Demo extends Simulation {
             .times(Mat4.scale(1,1,1))
         //if(ball_angle != 1){
             this.shapes.sphere.draw(context, program_state,model_trans_rotate , this.material.override({color: color(1, 0,0, 1)}));
+            
 /*
         }else{
             let model_transform_sphere = Mat4.identity();
@@ -290,6 +363,22 @@ export class Inertia_Demo extends Simulation {
 
         this.shapes.cube.draw(context, program_state, table_transform,this.material.override(this.data.textures.earth));
 
+        const gold = color(1, 0.876, 0, 1);
+        this.shapes.cube.draw(context, program_state,Mat4.translation(0,  15, 7)
+            .times(Mat4.rotation(Math.PI, 1, 0, 0))
+            .times(Mat4.scale(14, 0.5, 0.5)), this.material.override({color: gold}));
+        //draw the bottom wall:
+        this.shapes.cube.draw(context, program_state,Mat4.translation(0,  -15, 7)
+            .times(Mat4.rotation(Math.PI, 1, 0, 0))
+            .times(Mat4.scale(14, 0.5, 0.5)), this.material.override({color: gold}));
+
+        //draw the side walls
+
+        let count = 2;
+        while (count > 3){
+            count = Math.floor(Math.random() * 10);
+        }
+        this.generateWalls(context, program_state, count);
     }
 }
 
