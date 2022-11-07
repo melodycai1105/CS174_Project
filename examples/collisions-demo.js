@@ -3,86 +3,86 @@ import {defs, tiny} from './common.js';
 // Pull these names into this module's scope for convenience:
 const {vec3, unsafe3, vec4, color, Mat4, Light, Shape, Material, Shader, Texture, Scene} = tiny;
 
-export class Body {
+// export class Body {
     // **Body** can store and update the properties of a 3D body that incrementally
     // moves from its previous place due to velocities.  It conforms to the
     // approach outlined in the "Fix Your Timestep!" blog post by Glenn Fiedler.
-    constructor(shape, material, size) {
-        Object.assign(this,
-            {shape, material, size})
-    }
+    // constructor(shape, material, size) {
+    //     Object.assign(this,
+    //         {shape, material, size})
+    // }
 
     // (within some margin of distance).
-    static intersect_cube(p, margin = 0) {
-        return p.every(value => value >= -1 - margin && value <= 1 + margin)
-    }
-
-    static intersect_sphere(p, margin = 0) {
-        return p.dot(p) < 1 + margin;
-    }
-
-    emplace(location_matrix, linear_velocity, angular_velocity, spin_axis = vec3(0, 0, 0).randomized(1).normalized()) {                               // emplace(): assign the body's initial values, or overwrite them.
-        this.center = location_matrix.times(vec4(0, 0, 0, 1)).to3();
-        this.rotation = Mat4.translation(...this.center.times(-1)).times(location_matrix);
-        this.previous = {center: this.center.copy(), rotation: this.rotation.copy()};
-        // drawn_location gets replaced with an interpolated quantity:
-        this.drawn_location = location_matrix;
-        this.temp_matrix = Mat4.identity();
-        return Object.assign(this, {linear_velocity, angular_velocity, spin_axis})
-    }
-
-    advance(time_amount) {
-        // advance(): Perform an integration (the simplistic Forward Euler method) to
-        // advance all the linear and angular velocities one time-step forward.
-        this.previous = {center: this.center.copy(), rotation: this.rotation.copy()};
-        // Apply the velocities scaled proportionally to real time (time_amount):
-        // Linear velocity first, then angular:
-        this.center = this.center.plus(this.linear_velocity.times(time_amount));
-        this.rotation.pre_multiply(Mat4.rotation(time_amount * this.angular_velocity, ...this.spin_axis));
-    }
+    // static intersect_cube(p, margin = 0) {
+    //     return p.every(value => value >= -1 - margin && value <= 1 + margin)
+    // }
+    //
+    // static intersect_sphere(p, margin = 0) {
+    //     return p.dot(p) < 1 + margin;
+    // }
+    //
+    // emplace(location_matrix, linear_velocity, angular_velocity, spin_axis = vec3(0, 0, 0).randomized(1).normalized()) {                               // emplace(): assign the body's initial values, or overwrite them.
+    //     this.center = location_matrix.times(vec4(0, 0, 0, 1)).to3();
+    //     this.rotation = Mat4.translation(...this.center.times(-1)).times(location_matrix);
+    //     this.previous = {center: this.center.copy(), rotation: this.rotation.copy()};
+    //     // drawn_location gets replaced with an interpolated quantity:
+    //     this.drawn_location = location_matrix;
+    //     this.temp_matrix = Mat4.identity();
+    //     return Object.assign(this, {linear_velocity, angular_velocity, spin_axis})
+    // }
+    //
+    // advance(time_amount) {
+    //     // advance(): Perform an integration (the simplistic Forward Euler method) to
+    //     // advance all the linear and angular velocities one time-step forward.
+    //     this.previous = {center: this.center.copy(), rotation: this.rotation.copy()};
+    //     // Apply the velocities scaled proportionally to real time (time_amount):
+    //     // Linear velocity first, then angular:
+    //     this.center = this.center.plus(this.linear_velocity.times(time_amount));
+    //     this.rotation.pre_multiply(Mat4.rotation(time_amount * this.angular_velocity, ...this.spin_axis));
+    // }
 
     // The following are our various functions for testing a single point,
     // p, against some analytically-known geometric volume formula
 
-    blend_rotation(alpha) {
+    // blend_rotation(alpha) {
         // blend_rotation(): Just naively do a linear blend of the rotations, which looks
         // ok sometimes but otherwise produces shear matrices, a wrong result.
 
         // TODO:  Replace this function with proper quaternion blending, and perhaps
         // store this.rotation in quaternion form instead for compactness.
-        return this.rotation.map((x, i) => vec4(...this.previous.rotation[i]).mix(x, alpha));
-    }
+    //     return this.rotation.map((x, i) => vec4(...this.previous.rotation[i]).mix(x, alpha));
+    // }
+    //
+    // blend_state(alpha) {
+    //     // blend_state(): Compute the final matrix we'll draw using the previous two physical
+    //     // locations the object occupied.  We'll interpolate between these two states as
+    //     // described at the end of the "Fix Your Timestep!" blog post.
+    //     this.drawn_location = Mat4.translation(...this.previous.center.mix(this.center, alpha))
+    //         .times(this.blend_rotation(alpha))
+    //         .times(Mat4.scale(...this.size));
+    // }
 
-    blend_state(alpha) {
-        // blend_state(): Compute the final matrix we'll draw using the previous two physical
-        // locations the object occupied.  We'll interpolate between these two states as
-        // described at the end of the "Fix Your Timestep!" blog post.
-        this.drawn_location = Mat4.translation(...this.previous.center.mix(this.center, alpha))
-            .times(this.blend_rotation(alpha))
-            .times(Mat4.scale(...this.size));
-    }
-
-    check_if_colliding(b, collider) {
+    // check_if_colliding(b, collider) {
         // check_if_colliding(): Collision detection function.
         // DISCLAIMER:  The collision method shown below is not used by anyone; it's just very quick
         // to code.  Making every collision body an ellipsoid is kind of a hack, and looping
         // through a list of discrete sphere points to see if the ellipsoids intersect is *really* a
         // hack (there are perfectly good analytic expressions that can test if two ellipsoids
         // intersect without discretizing them into points).
-        if (this == b)
-            return false;
-        // Nothing collides with itself.
-        // Convert sphere b to the frame where a is a unit sphere:
-        const T = this.inverse.times(b.drawn_location, this.temp_matrix);
-
-        const {intersect_test, points, leeway} = collider;
+        // if (this == b)
+        //     return false;
+        // // Nothing collides with itself.
+        // // Convert sphere b to the frame where a is a unit sphere:
+        // const T = this.inverse.times(b.drawn_location, this.temp_matrix);
+        //
+        // const {intersect_test, points, leeway} = collider;
         // For each vertex in that b, shift to the coordinate frame of
         // a_inv*b.  Check if in that coordinate frame it penetrates
         // the unit sphere at the origin.  Leave some leeway.
-        return points.arrays.position.some(p =>
-            intersect_test(T.times(p.to4(1)).to3(), leeway));
-    }
-}
+//         return points.arrays.position.some(p =>
+//             intersect_test(T.times(p.to4(1)).to3(), leeway));
+//     }
+// }
 
 
 export class Simulation extends Scene {
@@ -196,8 +196,15 @@ export class Inertia_Demo extends Simulation {
     // carry several bodies until they fall due to gravity and bounce.
     constructor() {
         super();
-        this.bounce=false;
-        this.ball_matrix = Mat4.identity().times(Mat4.rotation(-1.59820846, 0, 0, 1)).times(Mat4.translation(0, 3  , 6)).times(Mat4.rotation(Math.PI, 0, 0, 1));
+        this.game_started=false;
+        this.game_over=false;
+        this.bounced = true;
+        this.score=0;
+        this.x = 0;
+        this.y = 3;
+        this.z = 6;
+
+        // this.ball_matrix = Mat4.identity().times(Mat4.rotation(-1.59820846, 0, 0, 1)).times(Mat4.translation(0, 3  , 6)).times(Mat4.rotation(Math.PI, 0, 0, 1));
         this.data = new Test_Data();
         this.shapes = Object.assign({}, this.data.shapes);
         this.shapes.square = new defs.Square();
@@ -206,7 +213,7 @@ export class Inertia_Demo extends Simulation {
             color: color(.4, .8, .4, 1),
             ambient: .4, diffusivity: 0.6 //texture: this.data.textures.stars
         })
-        
+
     }
 
     move_left() {
@@ -225,17 +232,18 @@ export class Inertia_Demo extends Simulation {
             this.jump =True
     }
 
-    bounce(){
-        const t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000;
-        // let ball_angle=-Math.PI*t;
-        let ball_angle = Math.PI / 2 + Math.sin(3 * t + Math.PI / 2);
-        if (t <= 0.9) {
-            ball_angle = Math.PI / 2 + Math.sin(3 * t + Math.PI / 2);
-        } else {
-            ball_angle = Math.PI / 2 + Math.sin(3 * 0.9 + Math.PI / 2)
-        }
-        this.ball_matrix = this.ball_matrix.times(Mat4.rotation(-ball_angle, 0, 0, 1)).times(Mat4.translation(0, 3 + 5 * t, 6)).times(Mat4.rotation(Math.PI, 0, 0, 1))
-            .times(Mat4.scale(1, 1, 1));
+    bounce(context, program_state){
+        // const t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000;
+        // // let ball_angle=-Math.PI*t;
+        // let ball_angle = Math.PI / 2 + Math.sin(3 * t + Math.PI / 2);
+        // if (t <= 0.9) {
+        //     ball_angle = Math.PI / 2 + Math.sin(3 * t + Math.PI / 2);
+        // } else {
+        //     ball_angle = Math.PI / 2 + Math.sin(3 * 0.9 + Math.PI / 2)
+        // }
+        // this.ball_matrix = this.ball_matrix.times(Mat4.rotation(-ball_angle, 0, 0, 1)).times(Mat4.translation(0, 3 + 5 * t, 6)).times(Mat4.rotation(Math.PI, 0, 0, 1))
+        //     .times(Mat4.scale(1, 1, 1));
+
     }
     random_color() {
         return this.material.override(color(.6, .6 * Math.random(), .6 * Math.random(), 1));
@@ -334,7 +342,11 @@ export class Inertia_Demo extends Simulation {
     }
     //bounce the ball button
     make_control_panel() {
-        this.key_triggered_button("bounce the ball", ["q"], () => this.bounce());
+        this.key_triggered_button("bounce the ball", ["q"], () => {
+            this.game_started = true;
+            this.bounced = false;
+            }
+        );
         this.key_triggered_button("right", ["d"], () => this.move_right());
         this.key_triggered_button("left", ["a"], () => this.move_left());
         this.key_triggered_button("up", ["w"], () => this.move_up());
@@ -343,7 +355,7 @@ export class Inertia_Demo extends Simulation {
 
     display(context, program_state) {
         // display(): Draw everything else in the scene besides the moving bodies.
-        super.display(context, program_state);
+        // super.display(context, program_state);
 
         if (!context.scratchpad.controls) {
             this.children.push(context.scratchpad.controls = new defs.Movement_Controls());
@@ -358,25 +370,46 @@ export class Inertia_Demo extends Simulation {
         //Draw ball
         const t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000;
 
-        let ball_angle= 0;
-        if(t<=0.9){
-            ball_angle =Math.PI/2+Math.sin(3*t+Math.PI/2);
-        }else{
-            ball_angle = Math.PI/2+Math.sin(3*0.9+Math.PI/2)
+        if(!this.game_started){
+            model_transform = model_transform.times(Mat4.translation(0, 3, 6));
+            this.shapes.sphere.draw(context, program_state, model_transform , this.material.override({color: color(1, 0,0, 1)}));
+        }else if(!this.bounced) {
+            let model_transform = Mat4.identity();
+            this.x = this.x + 2;
+            this.y = this.y + 3.5;
+            model_transform = model_transform.times(Mat4.translation(this.x, this.y, this.z));
+            this.shapes.sphere.draw(context, program_state, model_transform, this.material.override({color: color(1, 0, 0, 1)}));
+            this.bounced = true;
+            // let ball_angle= 0;
+            // if(t<=0.9){
+            //     ball_angle =Math.PI/2+Math.sin(3*t+Math.PI/2);
+            // }else{
+            //     ball_angle = Math.PI/2+Math.sin(3*0.9+Math.PI/2)
+            // }
         }
-        let model_trans_rotate = Mat4.identity();
-        model_trans_rotate= model_trans_rotate.times(Mat4.rotation(ball_angle,0,0,1)).times(Mat4.translation(0, 3-5*t, 6));
-        console.log("x: "+model_trans_rotate[0][3])
-        console.log("y: "+model_trans_rotate[1][3])
-        console.log("z: "+ model_trans_rotate[2][3])
+        if(this.game_started){
+            let model_trans_rotate = Mat4.identity();
+            this.y = this.y - 0.2;
+            model_transform = model_trans_rotate.times(Mat4.translation(this.x, this.y, this.z));
+            // console.log("x: "+model_trans_rotate[0][3])
+            // console.log("y: "+model_trans_rotate[1][3])
+            // console.log("z: "+ model_trans_rotate[2][3])
+            console.log("x: "+ this.x)
+            console.log("y: "+ this.y)
+            console.log("z: "+ this.z)
 
-        console.log("t: "+ t)
+            console.log("t: "+ t)
+            this.shapes.sphere.draw(context, program_state,model_transform , this.material.override({color: color(1, 0,0, 1)}));
 
-        if(model_trans_rotate[1][3]-1 <= -14.5){
-            this.shapes.sphere.draw(context, program_state,model_trans_rotate , this.material.override({color: color(1, 0,0, 0)}));
-        }else{
-            this.shapes.sphere.draw(context, program_state,model_trans_rotate , this.material.override({color: color(1, 0,0, 1)}));
+            // if(model_trans_rotate[1][3]-1 <= -14.5){
+            //     this.shapes.sphere.draw(context, program_state,model_transform , this.material.override({color: color(1, 0,0, 0)}));
+            // }else {
+            //     this.shapes.sphere.draw(context, program_state, model_transform, this.material.override({color: color(1, 0, 0, 1)}));
+            // }
         }
+
+
+        model_transform = Mat4.identity();
         let table_transform = model_transform;
         table_transform = table_transform.times(Mat4.translation(0, 0, 5))
                                          .times(Mat4.rotation(Math.PI, 1, 0, 0))
