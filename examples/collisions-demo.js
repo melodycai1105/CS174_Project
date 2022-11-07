@@ -166,6 +166,7 @@ export class Test_Data {
             grid: new Texture("assets/grid.png"),
             stars: new Texture("assets/stars.png"),
             text: new Texture("assets/text.png"),
+           // game: new Texture("assets/game.jpg"),
         }
         this.shapes = {
             donut: new defs.Torus(15, 15, [[0, 2], [0, 1]]),
@@ -203,7 +204,7 @@ export class Inertia_Demo extends Simulation {
         const shader = new defs.Fake_Bump_Map(1);
         this.material = new Material(shader, {
             color: color(.4, .8, .4, 1),
-            ambient: .4, //texture: this.data.textures.stars
+            ambient: .4, diffusivity: 0.6 //texture: this.data.textures.stars
         })
     }
 
@@ -413,10 +414,14 @@ export class Inertia_Demo extends Simulation {
         table_transform = table_transform.times(Mat4.translation(0, 0, 5))
                                          .times(Mat4.rotation(Math.PI, 1, 0, 0))
                                          .times(Mat4.scale(14, 16, 1))
-        
+        let table_transform1 = model_transform;
+        table_transform1 = table_transform.times(Mat4.translation(0, 0, 2))
+            .times(Mat4.rotation(Math.PI, 1, 0, 0))
+            .times(Mat4.scale(100, 100, 1))
 
+        this.shapes.cube.draw(context, program_state, table_transform1,this.material.override({color: color(0.5,0,0.5,1)}));
         this.shapes.cube.draw(context, program_state, table_transform,this.material.override({color: color(1,1,0,1)}));
-
+       // this.data.textures.game
         const gold = color(1, 0.876, 0, 1);
         this.shapes.cube.draw(context, program_state,Mat4.translation(0,  15, 7)
             .times(Mat4.rotation(Math.PI, 1, 0, 0))
