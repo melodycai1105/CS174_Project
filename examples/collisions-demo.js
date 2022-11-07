@@ -176,6 +176,9 @@ export class Test_Data {
             prism: new (defs.Capped_Cylinder.prototype.make_flat_shaded_version())(10, 10, [[0, 2], [0, 1]]),
             gem: new (defs.Subdivision_Sphere.prototype.make_flat_shaded_version())(2),
             donut2: new (defs.Torus.prototype.make_flat_shaded_version())(20, 20, [[0, 2], [0, 1]]),
+            //square = new defs.Square(),
+            sphere: new defs.Subdivision_Sphere(4),
+            
         };
     }
 
@@ -237,10 +240,56 @@ export class Inertia_Demo extends Simulation {
         }
         program_state.projection_transform = Mat4.perspective(Math.PI / 4, context.width / context.height, 1, 500);
         program_state.lights = [new Light(vec4(0, -5, -10, 1), color(1, 1, 1, 1), 100000)];
+
+        //Building side walls
+        let model_transform = Mat4.identity();
+        const black = color(1, 0, 0, 1)
+        const white = color(0.2,0,0,1)
+        // //Draw side wall on top
+        // let topWall_tranform = model_transform;
+        // topWall_tranform = topWall_tranform.times(Mat4.translation(0, 13, 0))
+        //                                    .times(Mat4.rotation(Math.PI/1.2, 1, 0, 0))
+        //                                    .times(Mat4.scale(14, 0.3, 0.5))
+        
+        // this.shapes.cube.draw(context, program_state, topWall_tranform, this.material.override({color: black}));
+        // //Draw first side wall on right
+
+        // let side1_transform = model_transform;
+        // side1_transform =side1_transform.times(Mat4.translation(13, 9, 0))
+        //                                 .times(Mat4.rotation(Math.PI/1.2, 1, 0, 0))
+        //                                 .times(Mat4.scale(0.7, 8, 0.5))
+        // this.shapes.cube.draw(context, program_state, side1_transform, this.material.override({color: white}));
         // Draw the ground:
-        this.shapes.square.draw(context, program_state, Mat4.translation(0, -10, 0)
-                .times(Mat4.rotation(Math.PI / 2, 1, 0, 0)).times(Mat4.scale(50, 50, 1)),
-            this.material.override(this.data.textures.earth));
+        //Draw ball
+        const t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000;
+        // let ball_angle=-Math.PI*t;
+        let ball_angle= Math.PI/2+Math.sin(3*t+Math.PI/2);
+        if(t<=0.9){
+            ball_angle =Math.PI/2+Math.sin(3*t+Math.PI/2);
+        }else{
+            ball_angle = Math.PI/2+Math.sin(3*0.9+Math.PI/2)
+        }
+        //if(ball_angle>)
+        //console.log(t);
+        let model_trans_rotate=Mat4.rotation(-ball_angle,0,0,1).times(Mat4.translation(0, 3-5*t, 6)).times(Mat4.rotation(Math.PI,0,0,1))
+            .times(Mat4.scale(1,1,1))
+        //if(ball_angle != 1){
+            this.shapes.sphere.draw(context, program_state,model_trans_rotate , this.material.override({color: color(1, 0,0, 1)}));
+/*
+        }else{
+            let model_transform_sphere = Mat4.identity();
+            //straight move down!!!!!!!
+            model_transform_sphere = model_transform_sphere.times(Mat4.translation(4,3-5*t,6)).times(Mat4.scale(1,1,1));
+            this.shapes.sphere.draw(context, program_state, model_transform_sphere, this.material.override({color: color(1, 0,0, 1)}));
+        }*/
+        let table_transform = model_transform;
+        table_transform = table_transform.times(Mat4.translation(0, 0, 0))
+                                         .times(Mat4.rotation(Math.PI, 1, 0, 0))
+                                         .times(Mat4.scale(14, 16, 1))
+        
+
+        this.shapes.cube.draw(context, program_state, table_transform,this.material.override(this.data.textures.earth));
+
     }
 }
 
