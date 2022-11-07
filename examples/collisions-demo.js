@@ -206,6 +206,7 @@ export class Inertia_Demo extends Simulation {
             color: color(.4, .8, .4, 1),
             ambient: .4, diffusivity: 0.6 //texture: this.data.textures.stars
         })
+        
     }
 
     move_left() {
@@ -221,7 +222,7 @@ export class Inertia_Demo extends Simulation {
     }
 
     move_down() {
-            this.ball_matrix = this.ball_matrix.times(Mat4.translation(-2,0,0));
+            this.jump =True
     }
 
     bounce(){
@@ -354,62 +355,28 @@ export class Inertia_Demo extends Simulation {
 
         //Building side walls
         let model_transform = Mat4.identity();
-        const black = color(1, 0, 0, 1)
-        const white = color(0.2, 0, 0, 1)
-        // //Draw side wall on top
-        // let topWall_tranform = model_transform;
-        // topWall_tranform = topWall_tranform.times(Mat4.translation(0, 13, 0))
-        //                                    .times(Mat4.rotation(Math.PI/1.2, 1, 0, 0))
-        //                                    .times(Mat4.scale(14, 0.3, 0.5))
-
-        // this.shapes.cube.draw(context, program_state, topWall_tranform, this.material.override({color: black}));
-        // //Draw first side wall on right
-
-        // let side1_transform = model_transform;
-        // side1_transform =side1_transform.times(Mat4.translation(13, 9, 0))
-        //                                 .times(Mat4.rotation(Math.PI/1.2, 1, 0, 0))
-        //                                 .times(Mat4.scale(0.7, 8, 0.5))
-        // this.shapes.cube.draw(context, program_state, side1_transform, this.material.override({color: white}));
-        // Draw the ground:
-
-
         //Draw ball
-        //const t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000;
-        // let ball_angle=-Math.PI*t;
-        //let ball_angle = Math.PI / 2 + Math.sin(3 * t + Math.PI / 2);
-        //if (t <= 0.9) {
-        //    ball_angle = Math.PI / 2 + Math.sin(3 * t + Math.PI / 2);
-        //} else {
-            //    ball_angle = Math.PI / 2 + Math.sin(3 * 0.9 + Math.PI / 2)
-        //}
-        //if(ball_angle>)
-        //console.log(t);
-        let model_transform_ball = this.ball_matrix;
-        this.shapes.sphere.draw(context, program_state, model_transform_ball, this.material.override({color: color(1, 0, 0, 1)}));
-        //this.bounce=false;
-        /*
-        let model_trans_rotate = Mat4.identity();
-        if (this.bounce == true) {
-            model_trans_rotate = model_trans_rotate.times(Mat4.rotation(-ball_angle, 0, 0, 1)).times(Mat4.translation(0, 3 + 5 * t, 6)).times(Mat4.rotation(Math.PI, 0, 0, 1))
-            .times(Mat4.scale(1, 1, 1));
-        //if(ball_angle != 1){
-        this.shapes.sphere.draw(context, program_state, model_trans_rotate, this.material.override({color: color(1, 0, 0, 1)}));
-            //this.bounce=false;
+        const t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000;
 
-    }else{
-            let model_trans_rotate2 = Mat4.identity();
-             model_trans_rotate2 = model_trans_rotate2.times(Mat4.rotation(-ball_angle, 0, 0, 1)).times(Mat4.translation(0, 3 - 5 * t, 6)).times(Mat4.rotation(Math.PI, 0, 0, 1))
-                .times(Mat4.scale(1, 1, 1))
-            this.shapes.sphere.draw(context, program_state, model_trans_rotate2, this.material.override({color: color(1, 0, 0, 1)}));
-        }*/
-
-/*
+        let ball_angle= 0;
+        if(t<=0.9){
+            ball_angle =Math.PI/2+Math.sin(3*t+Math.PI/2);
         }else{
-            let model_transform_sphere = Mat4.identity();
-            //straight move down!!!!!!!
-            model_transform_sphere = model_transform_sphere.times(Mat4.translation(4,3-5*t,6)).times(Mat4.scale(1,1,1));
-            this.shapes.sphere.draw(context, program_state, model_transform_sphere, this.material.override({color: color(1, 0,0, 1)}));
-        }*/
+            ball_angle = Math.PI/2+Math.sin(3*0.9+Math.PI/2)
+        }
+        let model_trans_rotate = Mat4.identity();
+        model_trans_rotate= model_trans_rotate.times(Mat4.rotation(ball_angle,0,0,1)).times(Mat4.translation(0, 3-5*t, 6));
+        console.log("x: "+model_trans_rotate[0][3])
+        console.log("y: "+model_trans_rotate[1][3])
+        console.log("z: "+ model_trans_rotate[2][3])
+
+        console.log("t: "+ t)
+
+        if(model_trans_rotate[1][3]-1 <= -14.5){
+            this.shapes.sphere.draw(context, program_state,model_trans_rotate , this.material.override({color: color(1, 0,0, 0)}));
+        }else{
+            this.shapes.sphere.draw(context, program_state,model_trans_rotate , this.material.override({color: color(1, 0,0, 1)}));
+        }
         let table_transform = model_transform;
         table_transform = table_transform.times(Mat4.translation(0, 0, 5))
                                          .times(Mat4.rotation(Math.PI, 1, 0, 0))
