@@ -369,15 +369,25 @@ export class Inertia_Demo extends Simulation {
         let model_transform = Mat4.identity();
         //Draw ball
         const t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000;
-
+        let angle=0.1*t;
         if(!this.game_started){
             model_transform = model_transform.times(Mat4.translation(0, 3, 6));
             this.shapes.sphere.draw(context, program_state, model_transform , this.material.override({color: color(1, 0,0, 1)}));
-        }else if(!this.bounced) {
+        }//else
+            if(!this.bounced) {
             let model_transform = Mat4.identity();
-            this.x = this.x + 2;
-            this.y = this.y + 3.5;
+            //this.x = this.x + 2;
+            //this.y = this.y + 3.5;
+            //model_transform = model_transform.times(Mat4.translation(this.x, this.y, this.z));
+            //model_transform = model_transform.times(Mat4.rotation(0.2*t,0, 0, 1)).times(Mat4.translation(0,2,0));
+
+            this.x=(this.x-0.1)*Math.cos(angle)-(this.y-0.1)*Math.sin(angle)+0.1;
+                //this.x=this.x-0.1;
+            this.y=(this.x-0.1)*Math.sin(angle)+(this.y-0.1)*Math.cos(angle)-0.1;
             model_transform = model_transform.times(Mat4.translation(this.x, this.y, this.z));
+
+            //this.z=model_transform[2][3];
+
             this.shapes.sphere.draw(context, program_state, model_transform, this.material.override({color: color(1, 0, 0, 1)}));
             this.bounced = true;
             // let ball_angle= 0;
@@ -386,10 +396,10 @@ export class Inertia_Demo extends Simulation {
             // }else{
             //     ball_angle = Math.PI/2+Math.sin(3*0.9+Math.PI/2)
             // }
-        }
-        if(this.game_started){
+        }//&& angle>3.14
+        if(this.game_started ){
             let model_trans_rotate = Mat4.identity();
-            this.y = this.y - 0.2;
+             this.y = this.y - 0.2;
             model_transform = model_trans_rotate.times(Mat4.translation(this.x, this.y, this.z));
             // console.log("x: "+model_trans_rotate[0][3])
             // console.log("y: "+model_trans_rotate[1][3])
