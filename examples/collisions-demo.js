@@ -211,9 +211,9 @@ export class Inertia_Demo extends Simulation {
         const shader = new defs.Fake_Bump_Map(1);
         this.material = new Material(shader, {
             color: color(.4, .8, .4, 1),
-            ambient: .4, diffusivity: 0.6 //texture: this.data.textures.stars
-        })
-
+            ambient: .4, diffusivity: 0.6 //,texture: this.data.textures.stars
+        });
+        this.bounce_angle = 0.5 * Math.PI;
     }
 
     move_left() {
@@ -229,7 +229,7 @@ export class Inertia_Demo extends Simulation {
     }
 
     move_down() {
-            this.jump =True
+        this.ball_matrix = this.ball_matrix.times(Mat4.translation(-2,0,0));
     }
 
     bounce(context, program_state){
@@ -369,41 +369,41 @@ export class Inertia_Demo extends Simulation {
         let model_transform = Mat4.identity();
         //Draw ball
         const t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000;
-        let angle=0.1*t;
+        console.log(this.bounced);
         if(!this.game_started){
             model_transform = model_transform.times(Mat4.translation(0, 3, 6));
             this.shapes.sphere.draw(context, program_state, model_transform , this.material.override({color: color(1, 0,0, 1)}));
         }//else
-            if(!this.bounced) {
+        if(!this.bounced) {
+            this.bounce_angle += 1.7 * dt * Math.PI;
             let model_transform = Mat4.identity();
             //this.x = this.x + 2;
             //this.y = this.y + 3.5;
             //model_transform = model_transform.times(Mat4.translation(this.x, this.y, this.z));
             //model_transform = model_transform.times(Mat4.rotation(0.2*t,0, 0, 1)).times(Mat4.translation(0,2,0));
 
-            this.x=(this.x-0.1)*Math.cos(angle)-(this.y-0.1)*Math.sin(angle)+0.1;
-                //this.x=this.x-0.1;
-            this.y=(this.x-0.1)*Math.sin(angle)+(this.y-0.1)*Math.cos(angle)-0.1;
+            //this.x=(this.x)*Math.cos(angle)-(this.y)*Math.sin(angle);
+            this.x= this.x + 0.17 * Math.cos(this.bounce_angle);
+            this.y = this.y + 0.17 * Math.sin(this.bounce_angle);
             model_transform = model_transform.times(Mat4.translation(this.x, this.y, this.z));
 
-            //this.z=model_transform[2][3];
+            this.shapes.sphere.draw(context, program_state, model_transform, this.material.override({color: color(1, 0, 0, 1)}));//this.bounced = true;
+            if(this.bounce_angle >= 1.5 * Math.PI)
+            {
+                console.log("reach here");
+                this.bounced = true;
+                this.bounce_angle = 0.5 * Math.PI;
+            }
 
-            this.shapes.sphere.draw(context, program_state, model_transform, this.material.override({color: color(1, 0, 0, 1)}));
-            this.bounced = true;
-            // let ball_angle= 0;
-            // if(t<=0.9){
-            //     ball_angle =Math.PI/2+Math.sin(3*t+Math.PI/2);
-            // }else{
-            //     ball_angle = Math.PI/2+Math.sin(3*0.9+Math.PI/2)
-            // }
-        }//&& angle>3.14
-        if(this.game_started ){
+         }//else{
+        //     model_transform = model_transform.times(Mat4.translation(this.x, this.y, this.z));
+        //     this.shapes.sphere.draw(context, program_state,model_transform , this.material.override({color: color(1, 0,0, 1)}));
+        //
+        // }
+        else if(this.game_started ){
             let model_trans_rotate = Mat4.identity();
-             this.y = this.y - 0.2;
+            this.y = this.y - 0.2;
             model_transform = model_trans_rotate.times(Mat4.translation(this.x, this.y, this.z));
-            // console.log("x: "+model_trans_rotate[0][3])
-            // console.log("y: "+model_trans_rotate[1][3])
-            // console.log("z: "+ model_trans_rotate[2][3])
             console.log("x: "+ this.x)
             console.log("y: "+ this.y)
             console.log("z: "+ this.z)
@@ -411,12 +411,11 @@ export class Inertia_Demo extends Simulation {
             console.log("t: "+ t)
             this.shapes.sphere.draw(context, program_state,model_transform , this.material.override({color: color(1, 0,0, 1)}));
 
-            // if(model_trans_rotate[1][3]-1 <= -14.5){
-            //     this.shapes.sphere.draw(context, program_state,model_transform , this.material.override({color: color(1, 0,0, 0)}));
-            // }else {
-            //     this.shapes.sphere.draw(context, program_state, model_transform, this.material.override({color: color(1, 0, 0, 1)}));
-            // }
+
         }
+
+
+
 
 
         model_transform = Mat4.identity();
