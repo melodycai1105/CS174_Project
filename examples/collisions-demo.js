@@ -179,7 +179,7 @@ export class Test_Data {
             donut2: new (defs.Torus.prototype.make_flat_shaded_version())(20, 20, [[0, 2], [0, 1]]),
             //square = new defs.Square(),
             sphere: new defs.Subdivision_Sphere(4),
-            
+
         };
     }
 
@@ -187,6 +187,17 @@ export class Test_Data {
         // random_shape():  Extract a random shape from this.shapes.
         const shape_names = Object.keys(shape_list);
         return shape_list[shape_names[~~(shape_names.length * Math.random())]]
+    }
+}
+
+export class Wall extends Simulation{
+    constructor(x, y, z, scale, color) {
+        super();
+        this.wallx = x;
+        this.wally = y;
+        this.wallz = z;
+        this.wallscale = scale;
+        this.wallcolor = color;
     }
 }
 
@@ -198,11 +209,31 @@ export class Inertia_Demo extends Simulation {
         super();
         this.game_started=false;
         this.game_over=false;
+        this.goRight = true;
         this.bounced = true;
         this.score=0;
         this.x = 0;
         this.y = 3;
         this.z = 6;
+        this.rightbound = 12.8;
+        this.leftbound = -12.9;
+        this.upperbound = 14.7;
+        this.bottom = -14;
+        this.count = 0;
+        this.changeDirection = false;
+        this.bounce_angle= 0.5 * Math.PI;
+        // this.color1 = color(1, 1, 1, 1);
+        // this.color2 = color(0, 0, 0, 1);
+        // this.color3 = color(1, 0, 0, 1);
+        // this.color4 = color(0, 0, 1, 1);
+        this.colors = [color(1, 1, 1, 1), color(0, 0, 0, 1), color(1, 0, 0, 1), color(0, 0, 1, 1)];
+        this.ballcolor = this.colors[0];
+
+        // const white = color(1, 1, 1, 1);
+        // const black = color(0, 0, 0, 1);
+        // const red = color(1, 0, 0, 1);
+        // const blue = color(0, 0, 1, 1);
+
 
         // this.ball_matrix = Mat4.identity().times(Mat4.rotation(-1.59820846, 0, 0, 1)).times(Mat4.translation(0, 3  , 6)).times(Mat4.rotation(Math.PI, 0, 0, 1));
         this.data = new Test_Data();
@@ -213,7 +244,6 @@ export class Inertia_Demo extends Simulation {
             color: color(.4, .8, .4, 1),
             ambient: .4, diffusivity: 0.6 //texture: this.data.textures.stars
         })
-
     }
 
     move_left() {
@@ -232,19 +262,19 @@ export class Inertia_Demo extends Simulation {
             this.jump =True
     }
 
-    bounce(context, program_state){
-        // const t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000;
-        // // let ball_angle=-Math.PI*t;
-        // let ball_angle = Math.PI / 2 + Math.sin(3 * t + Math.PI / 2);
-        // if (t <= 0.9) {
-        //     ball_angle = Math.PI / 2 + Math.sin(3 * t + Math.PI / 2);
-        // } else {
-        //     ball_angle = Math.PI / 2 + Math.sin(3 * 0.9 + Math.PI / 2)
-        // }
-        // this.ball_matrix = this.ball_matrix.times(Mat4.rotation(-ball_angle, 0, 0, 1)).times(Mat4.translation(0, 3 + 5 * t, 6)).times(Mat4.rotation(Math.PI, 0, 0, 1))
-        //     .times(Mat4.scale(1, 1, 1));
-
-    }
+    // bounce(context, program_state){
+    //     // const t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000;
+    //     // // let ball_angle=-Math.PI*t;
+    //     // let ball_angle = Math.PI / 2 + Math.sin(3 * t + Math.PI / 2);
+    //     // if (t <= 0.9) {
+    //     //     ball_angle = Math.PI / 2 + Math.sin(3 * t + Math.PI / 2);
+    //     // } else {
+    //     //     ball_angle = Math.PI / 2 + Math.sin(3 * 0.9 + Math.PI / 2)
+    //     // }
+    //     // this.ball_matrix = this.ball_matrix.times(Mat4.rotation(-ball_angle, 0, 0, 1)).times(Mat4.translation(0, 3 + 5 * t, 6)).times(Mat4.rotation(Math.PI, 0, 0, 1))
+    //     //     .times(Mat4.scale(1, 1, 1));
+    //
+    // }
     random_color() {
         return this.material.override(color(.6, .6 * Math.random(), .6 * Math.random(), 1));
     }
@@ -269,28 +299,32 @@ export class Inertia_Demo extends Simulation {
         this.bodies = this.bodies.filter(b => b.center.norm() < 50 && b.linear_velocity.norm() > 2);
     }
 
-    generateWalls(context, program_state, count){
-        const white = color(1, 1, 1, 1);
-        const black = color(0, 0, 0, 1);
-        const red = color(1, 0, 0, 1);
-        const blue = color(0, 0, 1, 1);
+    generateWalls(context, program_state){
+        if(this.count == 0) {
+            const rightwall1 = new Wall(13.3, 7.5, 7, 7, this.colors[0]);
+            const rightwall2 = new Wall(13.3, -7, 7, 7.5, this.colors[1]);
 
-        if(count == 0) {
-            //right side wall
-            this.shapes.cube.draw(context, program_state, Mat4.translation(13.3, 7.5, 7)
+            //right side walls
+            this.shapes.cube.draw(context, program_state, Mat4.translation(rightwall1.wallx, rightwall1.wally, rightwall1.wallz)
                 .times(Mat4.rotation(Math.PI, 1, 0, 0))
-                .times(Mat4.scale(0.7, 7, 0.5)), this.material.override({color: white}));
-            this.shapes.cube.draw(context, program_state, Mat4.translation(13.3, -7, 7)
+                .times(Mat4.scale(0.7, rightwall1.wallscale, 0.5)), this.material.override({color: rightwall1.wallcolor}));
+
+            this.shapes.cube.draw(context, program_state, Mat4.translation(rightwall2.wallx, rightwall2.wally, rightwall2.wallz)
                 .times(Mat4.rotation(Math.PI, 1, 0, 0))
-                .times(Mat4.scale(0.7, 7.5, 0.5)), this.material.override({color: black}));
-            //left side wall
-            this.shapes.cube.draw(context, program_state, Mat4.translation(-13.3, 9.8, 7)
+                .times(Mat4.scale(0.7, rightwall2.wallscale, 0.5)), this.material.override({color: rightwall2.wallcolor}));
+
+            const leftwall1 = new Wall(-13.3, 9.8, 7, 4.8, this.colors[1]);
+            const leftwall2 = new Wall(-13.3, -4.8, 7, 9.8, this.colors[0]);
+
+            //left side walls
+            this.shapes.cube.draw(context, program_state, Mat4.translation(leftwall1.wallx, leftwall1.wally, leftwall1.wallz)
                 .times(Mat4.rotation(Math.PI, 1, 0, 0))
-                .times(Mat4.scale(0.7, 4.8, 0.5)), this.material.override({color: white}));
-            this.shapes.cube.draw(context, program_state, Mat4.translation(-13.3, -4.8, 7)
+                .times(Mat4.scale(0.7, leftwall1.wallscale, 0.5)), this.material.override({color: leftwall1.wallcolor}));
+            this.shapes.cube.draw(context, program_state, Mat4.translation(leftwall2.wallx, leftwall2.wally, leftwall2.wallz)
                 .times(Mat4.rotation(Math.PI, 1, 0, 0))
-                .times(Mat4.scale(0.7, 9.8, 0.5)), this.material.override({color: black}));
-        }else if(count == 1){
+                .times(Mat4.scale(0.7, leftwall2.wallscale, 0.5)), this.material.override({color: leftwall2.wallcolor}));
+
+        }else if(this.count == 1){
             //right side wall
             this.shapes.cube.draw(context, program_state, Mat4.translation(13.3, 10.5, 7)
                 .times(Mat4.rotation(Math.PI, 1, 0, 0))
@@ -311,7 +345,7 @@ export class Inertia_Demo extends Simulation {
             this.shapes.cube.draw(context, program_state, Mat4.translation(-13.3, -11, 7)
                 .times(Mat4.rotation(Math.PI, 1, 0, 0))
                 .times(Mat4.scale(0.7, 3.5, 0.5)), this.material.override({color: red}));
-       }else if(count == 2){
+       }else if(this.count == 2){
             //right side wall
             this.shapes.cube.draw(context, program_state, Mat4.translation(13.3, 11.5, 7)
                 .times(Mat4.rotation(Math.PI, 1, 0, 0))
@@ -339,6 +373,7 @@ export class Inertia_Demo extends Simulation {
                 .times(Mat4.rotation(Math.PI, 1, 0, 0))
                 .times(Mat4.scale(0.7, 3.9, 0.5)), this.material.override({color: blue}));
         }
+        this.changeDirection = false;
     }
     //bounce the ball button
     make_control_panel() {
@@ -372,40 +407,82 @@ export class Inertia_Demo extends Simulation {
 
         if(!this.game_started){
             model_transform = model_transform.times(Mat4.translation(0, 3, 6));
-            this.shapes.sphere.draw(context, program_state, model_transform , this.material.override({color: color(1, 0,0, 1)}));
-        }else if(!this.bounced) {
+            this.shapes.sphere.draw(context, program_state, model_transform , this.material.override({color: this.ballcolor}));
+        }//else
+        if(!this.bounced && (!this.game_over)) {
+            this.bounce_angle += 0.5 * dt*1.2 * Math.PI;
             let model_transform = Mat4.identity();
-            this.x = this.x + 2;
-            this.y = this.y + 3.5;
+
+            //bounce to right is this.x - 0.17 * Math.cos(this.bounce_angle);
+            //bounce to left is this.x + 0.17 * Math.cos(this.bounce_angle);
+            if(this.goRight){
+                this.x= this.x - 0.05 * Math.cos(this.bounce_angle);
+            }else{
+                this.x= this.x + 0.05 * Math.cos(this.bounce_angle);
+            }
+
+            this.y = this.y + 0.15* Math.sin(this.bounce_angle);
+            if(this.y +1 >= this.upperbound || this.y <= this.bottom){
+                this.game_over =true;
+            }
+            if((this.goRight &&this.x+1 >= this.rightbound)){
+                this.goRight = !this.goRight
+                this.changeDirection = true;
+            }
+            else if((!this.goRight &&this.x-1 <= this.leftbound)){
+                this.goRight = !this.goRight
+                this.changeDirection = true;
+            }
             model_transform = model_transform.times(Mat4.translation(this.x, this.y, this.z));
-            this.shapes.sphere.draw(context, program_state, model_transform, this.material.override({color: color(1, 0, 0, 1)}));
-            this.bounced = true;
-            // let ball_angle= 0;
-            // if(t<=0.9){
-            //     ball_angle =Math.PI/2+Math.sin(3*t+Math.PI/2);
-            // }else{
-            //     ball_angle = Math.PI/2+Math.sin(3*0.9+Math.PI/2)
-            // }
+            this.y = this.y + 0.015 * Math.sin(this.bounce_angle);
+            if(this.bounce_angle >= 1.1*Math.PI)
+            {
+                console.log("reach here");
+                this.bounced = true;
+                this.bounce_angle = 0.5 * Math.PI;
+            }
+
+            this.shapes.sphere.draw(context, program_state, model_transform, this.material.override({color: this.ballcolor}));//this.bounced = true;
+
+
+        }//else{
+            //     model_transform = model_transform.times(Mat4.translation(this.x, this.y, this.z));
+            //     this.shapes.sphere.draw(context, program_state,model_transform , this.material.override({color: color(1, 0,0, 1)}));
+            //
+        // }
+        else if(this.y +1 >= this.upperbound || this.y <= this.bottom){
+            this.game_over =true;
         }
-        if(this.game_started){
+        else if(this.game_started && (!this.game_over)){
+            if((this.goRight &&this.x+1 >= this.rightbound)){
+                this.goRight = !this.goRight
+                this.y = this.y+0.3
+                this.changeDirection = true;
+
+            }
+            else if((!this.goRight &&this.x-1 <= this.leftbound)){
+                this.goRight = !this.goRight
+                this.y = this.y+0.3
+                this.changeDirection = true;
+
+            }
             let model_trans_rotate = Mat4.identity();
             this.y = this.y - 0.2;
+            if(this.goRight){
+                this.x = this.x + 0.05;
+
+            }else{
+                this.x = this.x - 0.05;
+            }
+
             model_transform = model_trans_rotate.times(Mat4.translation(this.x, this.y, this.z));
-            // console.log("x: "+model_trans_rotate[0][3])
-            // console.log("y: "+model_trans_rotate[1][3])
-            // console.log("z: "+ model_trans_rotate[2][3])
             console.log("x: "+ this.x)
             console.log("y: "+ this.y)
             console.log("z: "+ this.z)
 
             console.log("t: "+ t)
-            this.shapes.sphere.draw(context, program_state,model_transform , this.material.override({color: color(1, 0,0, 1)}));
+            this.shapes.sphere.draw(context, program_state,model_transform , this.material.override({color: this.ballcolor }));
 
-            // if(model_trans_rotate[1][3]-1 <= -14.5){
-            //     this.shapes.sphere.draw(context, program_state,model_transform , this.material.override({color: color(1, 0,0, 0)}));
-            // }else {
-            //     this.shapes.sphere.draw(context, program_state, model_transform, this.material.override({color: color(1, 0, 0, 1)}));
-            // }
         }
 
 
@@ -433,11 +510,26 @@ export class Inertia_Demo extends Simulation {
 
         //draw the side walls
 
-        let count = 2;
-        while (count > 3){
-            count = Math.floor(Math.random() * 10);
+        // let count = 0;
+        // if (this.changeDirection){
+        //     count = Math.floor(Math.random() * 3);
+        // }
+        if (this.changeDirection) {
+            // this.count = Math.floor(Math.random() * 3);
+            this.count = 0;
+            for (let i = 0; i < this.count + 2; i++) {
+                this.colors[i] = color(Math.random(), Math.random(), Math.random(), 1.0);
+            }
+            let index = Math.floor(Math.random() * (this.count + 2));
+            this.ballcolor = this.colors[index];
+            this.changeDirection = false;
         }
-        this.generateWalls(context, program_state, count);
+        // console.log(this.count);
+
+        this.generateWalls(context, program_state);
+        // if (!this.changeDirection){
+        //     this.changeDirection = true;
+        // }
     }
 }
 
