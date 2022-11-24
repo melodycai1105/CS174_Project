@@ -204,8 +204,10 @@ export class Inertia_Demo extends Simulation {
         this.x = 0;
         this.y = 3;
         this.z = 6;
-        this.rightbound = 12.3;
-        this.leftbound = -13.3
+        this.rightbound = 12.8;
+        this.leftbound = -12.9;
+        this.upperbound = 14.7;
+        this.bottom = -14;
 
         // this.ball_matrix = Mat4.identity().times(Mat4.rotation(-1.59820846, 0, 0, 1)).times(Mat4.translation(0, 3  , 6)).times(Mat4.rotation(Math.PI, 0, 0, 1));
         this.data = new Test_Data();
@@ -390,13 +392,14 @@ export class Inertia_Demo extends Simulation {
             }
             
             this.y = this.y + 0.15* Math.sin(this.bounce_angle);
+            if(this.y +1 >= this.upperbound || this.y <= this.bottom){
+                this.game_over =true;
+            }
             if((this.goRight &&this.x+1 >= this.rightbound)){
                 this.goRight = !this.goRight
-                this.x = this.x - 0.03
             }
             else if((!this.goRight &&this.x-1 <= this.leftbound)){
                 this.goRight = !this.goRight
-                this.x = this.x + 0.03
             }
             model_transform = model_transform.times(Mat4.translation(this.x, this.y, this.z));
             this.y = this.y + 0.015 * Math.sin(this.bounce_angle);
@@ -406,14 +409,7 @@ export class Inertia_Demo extends Simulation {
                 this.bounced = true;
                 this.bounce_angle = 0.5 * Math.PI;
             }
-            if((this.goRight &&this.x+1 >= this.rightbound)){
-                this.goRight = !this.goRight
-                
-            }
-            else if((!this.goRight &&this.x-1 <= this.leftbound)){
-                this.goRight = !this.goRight
-                
-            }
+    
             this.shapes.sphere.draw(context, program_state, model_transform, this.material.override({color: color(1, 0, 0, 1)}));//this.bounced = true;
             
 
@@ -422,6 +418,9 @@ export class Inertia_Demo extends Simulation {
         //     this.shapes.sphere.draw(context, program_state,model_transform , this.material.override({color: color(1, 0,0, 1)}));
         //
         // }
+        else if(this.y +1 >= this.upperbound || this.y <= this.bottom){
+            this.game_over =true;
+        }
         else if(this.game_started && (!this.game_over)){
             if((this.goRight &&this.x+1 >= this.rightbound)){
                 this.goRight = !this.goRight
