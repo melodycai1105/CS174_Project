@@ -167,7 +167,9 @@ export class Test_Data {
             stars: new Texture("assets/stars.png"),
             text: new Texture("assets/text.png"),
             casino: new Texture("assets/casino.jpg"),
-            table: new Texture("assets/table.jpg")
+            table: new Texture("assets/table.jpg"),
+            start: new Texture("assets/start.png"),
+            over: new Texture("assets/over.png")
         }
         this.shapes = {
             donut: new defs.Torus(15, 15, [[0, 2], [0, 1]]),
@@ -224,6 +226,14 @@ export class Inertia_Demo extends Simulation {
                 color: color(1, .8, 0.7, 1),
                 ambient: .5, diffusivity: 0.7 ,texture: this.data.textures.casino
             }),
+           startGame:new Material(shader, {
+                color: color(0, 0, 0, 1),
+               ambient: .9, diffusivity: 0.9 ,texture: this.data.textures.start
+            }),
+            gameOver:new Material(shader, {
+                color: color(0, 0, 0, 1),
+                ambient: .9, diffusivity: 0.9 ,texture: this.data.textures.over
+            })
         };
         this.bounce_angle = 0.5 * Math.PI;
     }
@@ -354,6 +364,13 @@ export class Inertia_Demo extends Simulation {
     }
     //bounce the ball button
     make_control_panel() {
+        this.key_triggered_button("start game", ["z"],()=> {
+            this.game_started = true;
+        });
+        this.key_triggered_button("make game over", ["x"],()=> {
+            this.game_over = true;
+        });
+
         this.key_triggered_button("bounce the ball", ["q"], () => {
             this.game_started = true;
             this.bounced = false;
@@ -381,8 +398,29 @@ export class Inertia_Demo extends Simulation {
         let model_transform = Mat4.identity();
         //Draw ball
         const t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000;
-        console.log(this.bounced);
+        // console.log(this.bounced);
+        //before game start
+
         if(!this.game_started){
+            //game start lable
+            let start_matrix=Mat4.identity();
+            start_matrix = start_matrix.times(Mat4.translation(0, 0, 7))
+                //.times(Mat4.rotation(Math.PI, 1, 0, 0))
+                .times(Mat4.scale(15, 15, 1))
+
+             this.shapes.cube.draw(context, program_state, start_matrix,this.material.startGame);
+           }
+        if(this.game_over){
+            //game start lable
+            let start_matrix=Mat4.identity();
+            start_matrix = start_matrix.times(Mat4.translation(0, 0, 7))
+                //.times(Mat4.rotation(Math.PI, 1, 0, 0))
+                .times(Mat4.scale(15, 15, 1))
+
+            this.shapes.cube.draw(context, program_state, start_matrix,this.material.gameOver);
+        }
+        if(!this.game_started){
+
             model_transform = model_transform.times(Mat4.translation(0, 3, 6));
             this.shapes.sphere.draw(context, program_state, model_transform , this.material.original.override({color: color(1, 0,0, 1)}));
         }//else
