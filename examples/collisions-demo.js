@@ -204,7 +204,6 @@ export class Wall extends Simulation{
     }
 }
 
-
 export class Inertia_Demo extends Simulation {
     // ** Inertia_Demo** demonstration: This scene lets random initial momentums
     // carry several bodies until they fall due to gravity and bounce.
@@ -222,11 +221,6 @@ export class Inertia_Demo extends Simulation {
         this.leftbound = -12.9;
         this.upperbound = 14.7;
         this.bottom = -14;
-        this.count = 0;
-        this.changeDirection = false;
-
-        this.colors = [color(1, 1, 1, 1), color(0, 0, 0, 1), color(1, 0, 0, 1), color(0, 0, 1, 1)];
-        this.ballcolor = this.colors[0];
 
         // this.ball_matrix = Mat4.identity().times(Mat4.rotation(-1.59820846, 0, 0, 1)).times(Mat4.translation(0, 3  , 6)).times(Mat4.rotation(Math.PI, 0, 0, 1));
         this.data = new Test_Data();
@@ -252,6 +246,11 @@ export class Inertia_Demo extends Simulation {
             })
         };
         this.bounce_angle = 0.5 * Math.PI;
+        this.count = 0;
+        this.changeDirection = false;
+
+        this.colors = [color(1, 1, 1, 1), color(0, 0, 0, 1), color(1, 0, 0, 1), color(0, 0, 1, 1)];
+        this.ballcolor = this.colors[0];
     }
 
     move_left() {
@@ -284,7 +283,7 @@ export class Inertia_Demo extends Simulation {
     //
     // }
     random_color() {
-        return this.material.override(color(.6, .6 * Math.random(), .6 * Math.random(), 1));
+        return this.material.original.override(color(.6, .6 * Math.random(), .6 * Math.random(), 1));
     }
 
     update_state(dt) {
@@ -315,11 +314,11 @@ export class Inertia_Demo extends Simulation {
             //right side walls
             this.shapes.cube.draw(context, program_state, Mat4.translation(rightwall1.wallx, rightwall1.wally, rightwall1.wallz)
                 .times(Mat4.rotation(Math.PI, 1, 0, 0))
-                .times(Mat4.scale(0.7, rightwall1.wallscale, 0.5)), this.material.override({color: rightwall1.wallcolor}));
+                .times(Mat4.scale(0.7, rightwall1.wallscale, 0.5)), this.material.original.override({color: rightwall1.wallcolor}));
 
             this.shapes.cube.draw(context, program_state, Mat4.translation(rightwall2.wallx, rightwall2.wally, rightwall2.wallz)
                 .times(Mat4.rotation(Math.PI, 1, 0, 0))
-                .times(Mat4.scale(0.7, rightwall2.wallscale, 0.5)), this.material.override({color: rightwall2.wallcolor}));
+                .times(Mat4.scale(0.7, rightwall2.wallscale, 0.5)), this.material.original.override({color: rightwall2.wallcolor}));
 
             const leftwall1 = new Wall(-13.3, 9.8, 7, 4.8, this.colors[1]);
             const leftwall2 = new Wall(-13.3, -4.8, 7, 9.8, this.colors[0]);
@@ -327,59 +326,59 @@ export class Inertia_Demo extends Simulation {
             //left side walls
             this.shapes.cube.draw(context, program_state, Mat4.translation(leftwall1.wallx, leftwall1.wally, leftwall1.wallz)
                 .times(Mat4.rotation(Math.PI, 1, 0, 0))
-                .times(Mat4.scale(0.7, leftwall1.wallscale, 0.5)), this.material.override({color: leftwall1.wallcolor}));
+                .times(Mat4.scale(0.7, leftwall1.wallscale, 0.5)), this.material.original.override({color: leftwall1.wallcolor}));
             this.shapes.cube.draw(context, program_state, Mat4.translation(leftwall2.wallx, leftwall2.wally, leftwall2.wallz)
                 .times(Mat4.rotation(Math.PI, 1, 0, 0))
-                .times(Mat4.scale(0.7, leftwall2.wallscale, 0.5)), this.material.override({color: leftwall2.wallcolor}));
+                .times(Mat4.scale(0.7, leftwall2.wallscale, 0.5)), this.material.original.override({color: leftwall2.wallcolor}));
 
         }else if(this.count == 1){
             //right side wall
             this.shapes.cube.draw(context, program_state, Mat4.translation(13.3, 10.5, 7)
                 .times(Mat4.rotation(Math.PI, 1, 0, 0))
-                .times(Mat4.scale(0.7, 4, 0.5)), this.material.override({color: white}));
+                .times(Mat4.scale(0.7, 4, 0.5)), this.material.original.override({color: this.colors[0]}));
             this.shapes.cube.draw(context, program_state, Mat4.translation(13.3, 3.5, 7)
                 .times(Mat4.rotation(Math.PI, 1, 0, 0))
-                .times(Mat4.scale(0.7, 3, 0.5)), this.material.override({color: black}));
+                .times(Mat4.scale(0.7, 3, 0.5)), this.material.original.override({color: this.colors[0]}));
             this.shapes.cube.draw(context, program_state, Mat4.translation(13.3, -7, 7)
                 .times(Mat4.rotation(Math.PI, 1, 0, 0))
-                .times(Mat4.scale(0.7, 7.5, 0.5)), this.material.override({color: red}));
+                .times(Mat4.scale(0.7, 7.5, 0.5)), this.material.original.override({color: this.colors[0]}));
             //left side wall
             this.shapes.cube.draw(context, program_state, Mat4.translation(-13.3, 9.5, 7)
                 .times(Mat4.rotation(Math.PI, 1, 0, 0))
-                .times(Mat4.scale(0.7, 5, 0.5)), this.material.override({color: white}));
+                .times(Mat4.scale(0.7, 5, 0.5)), this.material.original.override({color: this.colors[0]}));
             this.shapes.cube.draw(context, program_state, Mat4.translation(-13.3, -1.5, 7)
                 .times(Mat4.rotation(Math.PI, 1, 0, 0))
-                .times(Mat4.scale(0.7, 6, 0.5)), this.material.override({color: black}));
+                .times(Mat4.scale(0.7, 6, 0.5)), this.material.original.override({color: this.colors[0]}));
             this.shapes.cube.draw(context, program_state, Mat4.translation(-13.3, -11, 7)
                 .times(Mat4.rotation(Math.PI, 1, 0, 0))
-                .times(Mat4.scale(0.7, 3.5, 0.5)), this.material.override({color: red}));
+                .times(Mat4.scale(0.7, 3.5, 0.5)), this.material.override({color: this.colors[0]}));
        }else if(this.count == 2){
             //right side wall
             this.shapes.cube.draw(context, program_state, Mat4.translation(13.3, 11.5, 7)
                 .times(Mat4.rotation(Math.PI, 1, 0, 0))
-                .times(Mat4.scale(0.7, 3, 0.5)), this.material.override({color: white}));
+                .times(Mat4.scale(0.7, 3, 0.5)), this.material.original.override({color: this.colors[0]}));
             this.shapes.cube.draw(context, program_state, Mat4.translation(13.3, 4.5, 7)
                 .times(Mat4.rotation(Math.PI, 1, 0, 0))
-                .times(Mat4.scale(0.7, 4, 0.5)), this.material.override({color: black}));
+                .times(Mat4.scale(0.7, 4, 0.5)), this.material.original.override({color: this.colors[0]}));
             this.shapes.cube.draw(context, program_state, Mat4.translation(13.3, -4.5, 7)
                 .times(Mat4.rotation(Math.PI, 1, 0, 0))
-                .times(Mat4.scale(0.7, 5, 0.5)), this.material.override({color: red}));
+                .times(Mat4.scale(0.7, 5, 0.5)), this.material.original.override({color: this.colors[0]}));
             this.shapes.cube.draw(context, program_state, Mat4.translation(13.3, -12, 7)
                 .times(Mat4.rotation(Math.PI, 1, 0, 0))
-                .times(Mat4.scale(0.7, 2.5, 0.5)), this.material.override({color: blue}));
+                .times(Mat4.scale(0.7, 2.5, 0.5)), this.material.original.override({color: this.colors[0]}));
             //left side wall
             this.shapes.cube.draw(context, program_state, Mat4.translation(-13.3, 12.5, 7)
                 .times(Mat4.rotation(Math.PI, 1, 0, 0))
-                .times(Mat4.scale(0.7, 2, 0.5)), this.material.override({color: white}));
+                .times(Mat4.scale(0.7, 2, 0.5)), this.material.original.override({color: this.colors[0]}));
             this.shapes.cube.draw(context, program_state, Mat4.translation(-13.3, 4.5, 7)
                 .times(Mat4.rotation(Math.PI, 1, 0, 0))
-                .times(Mat4.scale(0.7, 6, 0.5)), this.material.override({color: black}));
+                .times(Mat4.scale(0.7, 6, 0.5)), this.material.original.override({color: this.colors[0]}));
             this.shapes.cube.draw(context, program_state, Mat4.translation(-13.3, -4, 7)
                 .times(Mat4.rotation(Math.PI, 1, 0, 0))
-                .times(Mat4.scale(0.7, 2.5, 0.5)), this.material.override({color: red}));
+                .times(Mat4.scale(0.7, 2.5, 0.5)), this.material.original.override({color: this.colors[0]}));
             this.shapes.cube.draw(context, program_state, Mat4.translation(-13.3, -10.4, 7)
                 .times(Mat4.rotation(Math.PI, 1, 0, 0))
-                .times(Mat4.scale(0.7, 3.9, 0.5)), this.material.override({color: blue}));
+                .times(Mat4.scale(0.7, 3.9, 0.5)), this.material.original.override({color: this.colors[0]}));
         }
         this.changeDirection = false;
     }
@@ -419,6 +418,8 @@ export class Inertia_Demo extends Simulation {
         let model_transform = Mat4.identity();
         //Draw ball
         const t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000;
+        // console.log(this.bounced);
+        //before game start
 
         if(!this.game_started){
             //game start lable
@@ -438,8 +439,8 @@ export class Inertia_Demo extends Simulation {
 
             this.shapes.cube.draw(context, program_state, start_matrix,this.material.gameOver);
         }
-
         if(!this.game_started){
+
             model_transform = model_transform.times(Mat4.translation(0, 3, 6));
             this.shapes.sphere.draw(context, program_state, model_transform , this.material.original.override({color: this.ballcolor}));
         }//else
@@ -460,13 +461,14 @@ export class Inertia_Demo extends Simulation {
                 this.game_over =true;
             }
             if((this.goRight &&this.x+1 >= this.rightbound)){
-                this.goRight = !this.goRight
+                this.goRight = !this.goRight;
                 this.changeDirection = true;
             }
             else if((!this.goRight &&this.x-1 <= this.leftbound)){
                 this.goRight = !this.goRight
                 this.changeDirection = true;
             }
+
             model_transform = model_transform.times(Mat4.translation(this.x, this.y, this.z));
             this.y = this.y + 0.015 * Math.sin(this.bounce_angle);
             if(this.bounce_angle >= 1.1*Math.PI)
@@ -476,14 +478,9 @@ export class Inertia_Demo extends Simulation {
                 this.bounce_angle = 0.5 * Math.PI;
             }
 
-            this.shapes.sphere.draw(context, program_state, model_transform, this.material.override({color: this.ballcolor}));//this.bounced = true;
+            this.shapes.sphere.draw(context, program_state, model_transform, this.material.original.override({color: this.ballcolor}));//this.bounced = true;
 
-
-        }//else{
-            //     model_transform = model_transform.times(Mat4.translation(this.x, this.y, this.z));
-            //     this.shapes.sphere.draw(context, program_state,model_transform , this.material.override({color: color(1, 0,0, 1)}));
-            //
-        // }
+         }
         else if(this.y +1 >= this.upperbound || this.y <= this.bottom){
             this.game_over =true;
         }
@@ -492,32 +489,31 @@ export class Inertia_Demo extends Simulation {
                 this.goRight = !this.goRight
                 this.y = this.y+0.3
                 this.changeDirection = true;
-
             }
-            else if((!this.goRight &&this.x-1 <= this.leftbound)){
+            else if((!this.goRight &&this.x-1 <= this.leftbound)) {
                 this.goRight = !this.goRight
-                this.y = this.y+0.3
+                this.y = this.y + 0.3
                 this.changeDirection = true;
-
             }
             let model_trans_rotate = Mat4.identity();
             this.y = this.y - 0.2;
             if(this.goRight){
                 this.x = this.x + 0.05;
-
             }else{
                 this.x = this.x - 0.05;
             }
-
             model_transform = model_trans_rotate.times(Mat4.translation(this.x, this.y, this.z));
             console.log("x: "+ this.x)
             console.log("y: "+ this.y)
             console.log("z: "+ this.z)
 
             console.log("t: "+ t)
-            this.shapes.sphere.draw(context, program_state,model_transform , this.material.override({color: this.ballcolor }));
 
+            this.shapes.sphere.draw(context, program_state,model_transform , this.material.original.override({color: this.ballcolor }));
         }
+
+
+
 
 
         model_transform = Mat4.identity();
@@ -528,19 +524,19 @@ export class Inertia_Demo extends Simulation {
         let table_transform1 = model_transform;
         table_transform1 = table_transform.times(Mat4.translation(0, 0, 2))
             .times(Mat4.rotation(Math.PI, 1, 0, 0))
-            .times(Mat4.scale(100, 100, 1))
+            .times(Mat4.scale(3, 3, 1))
 
-        this.shapes.cube.draw(context, program_state, table_transform1,this.material.override({color: color(0.5,0,0.5,1)}));
-        this.shapes.cube.draw(context, program_state, table_transform,this.material.override({color: color(1,1,0,1)}));
+        this.shapes.cube.draw(context, program_state, table_transform1,this.material.test);
+        this.shapes.cube.draw(context, program_state, table_transform,this.material.original.override({color: color(1,0.5,0,1)}));
        // this.data.textures.game
         const gold = color(1, 0.876, 0, 1);
         this.shapes.cube.draw(context, program_state,Mat4.translation(0,  15, 7)
             .times(Mat4.rotation(Math.PI, 1, 0, 0))
-            .times(Mat4.scale(14, 0.5, 0.5)), this.material.override({color: gold}));
+            .times(Mat4.scale(14, 0.5, 0.5)), this.material.original.override({color: gold}));
         //draw the bottom wall:
         this.shapes.cube.draw(context, program_state,Mat4.translation(0,  -15, 7)
             .times(Mat4.rotation(Math.PI, 1, 0, 0))
-            .times(Mat4.scale(14, 0.5, 0.5)), this.material.override({color: gold}));
+            .times(Mat4.scale(14, 0.5, 0.5)), this.material.original.override({color: gold}));
 
         //draw the side walls
 
