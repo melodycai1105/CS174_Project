@@ -195,8 +195,6 @@ export class Inertia_Demo extends Simulation {
     // carry several bodies until they fall due to gravity and bounce.
     constructor() {
         super();
-<<<<<<< Updated upstream
-=======
         this.game_started=false;
         this.game_over=false;
         this.goRight = true;
@@ -214,7 +212,6 @@ export class Inertia_Demo extends Simulation {
 
 
         // this.ball_matrix = Mat4.identity().times(Mat4.rotation(-1.59820846, 0, 0, 1)).times(Mat4.translation(0, 3  , 6)).times(Mat4.rotation(Math.PI, 0, 0, 1));
->>>>>>> Stashed changes
         this.data = new Test_Data();
         this.shapes = Object.assign({}, this.data.shapes);
         this.shapes.square = new defs.Square();
@@ -347,20 +344,6 @@ export class Inertia_Demo extends Simulation {
         }else{
             ball_angle = Math.PI/2+Math.sin(3*0.9+Math.PI/2)
         }
-<<<<<<< Updated upstream
-        let model_trans_rotate = Mat4.identity();
-        model_trans_rotate= model_trans_rotate.times(Mat4.rotation(ball_angle,0,0,1)).times(Mat4.translation(0, 3-5*t, 6));
-        console.log("x: "+model_trans_rotate[0][3])
-        console.log("y: "+model_trans_rotate[1][3])
-        console.log("z: "+ model_trans_rotate[2][3])
-
-        console.log("t: "+ t)
-
-        if(model_trans_rotate[1][3]-1 <= -14.5){
-            this.shapes.sphere.draw(context, program_state,model_trans_rotate , this.material.override({color: color(1, 0,0, 0)}));
-        }else{
-            this.shapes.sphere.draw(context, program_state,model_trans_rotate , this.material.override({color: color(1, 0,0, 1)}));
-=======
         if(!this.game_started){
 
             model_transform = model_transform.times(Mat4.translation(0, 3, 6));
@@ -369,7 +352,6 @@ export class Inertia_Demo extends Simulation {
         if(!this.bounced && (!this.game_over)) {
             this.bounce_angle += 0.5 * dt*1.2 * Math.PI;
             let model_transform = Mat4.identity();
-            this.scoreNode.nodeValue = this.score.toFixed(0); 
             //bounce to right is this.x - 0.17 * Math.cos(this.bounce_angle);
             //bounce to left is this.x + 0.17 * Math.cos(this.bounce_angle);
             if(this.goRight){
@@ -405,7 +387,6 @@ export class Inertia_Demo extends Simulation {
          }
         else if(this.y +1 >= this.upperbound || this.y <= this.bottom){
             this.game_over =true;
->>>>>>> Stashed changes
         }
         
         
