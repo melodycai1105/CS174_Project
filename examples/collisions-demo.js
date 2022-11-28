@@ -194,13 +194,15 @@ export class Test_Data {
 }
 
 export class Wall extends Simulation{
-    constructor(x, y, z, scale, color) {
+    constructor(x, y, z, scale, color, up, low) {
         super();
         this.wallx = x;
         this.wally = y;
         this.wallz = z;
         this.wallscale = scale;
         this.wallcolor = color;
+        this.up = up;
+        this.low = low;
     }
 }
 
@@ -251,6 +253,8 @@ export class Inertia_Demo extends Simulation {
 
         this.colors = [color(1, 1, 1, 1), color(0, 0, 0, 1), color(1, 0, 0, 1), color(0, 0, 1, 1)];
         this.ballcolor = this.colors[0];
+        this.rightWalls = [new Wall(), new Wall(), new Wall(), new Wall()];
+        this.leftWalls = [new Wall(), new Wall(), new Wall(), new Wall()];
     }
 
     move_left() {
@@ -308,8 +312,10 @@ export class Inertia_Demo extends Simulation {
 
     generateWalls(context, program_state){
         if(this.count == 0) {
-            const rightwall1 = new Wall(13.3, 7.5, 7, 7, this.colors[0]);
-            const rightwall2 = new Wall(13.3, -7, 7, 7.5, this.colors[1]);
+            const rightwall1 = new Wall(13.3, 7.5, 7, 7, this.colors[0], 13.3, 0);
+            const rightwall2 = new Wall(13.3, -7, 7, 7.5, this.colors[1], 0, -13.3);
+            this.rightWalls[0] = rightwall1;
+            this.rightWalls[1] = rightwall2;
 
             //right side walls
             this.shapes.cube.draw(context, program_state, Mat4.translation(rightwall1.wallx, rightwall1.wally, rightwall1.wallz)
@@ -320,8 +326,10 @@ export class Inertia_Demo extends Simulation {
                 .times(Mat4.rotation(Math.PI, 1, 0, 0))
                 .times(Mat4.scale(0.7, rightwall2.wallscale, 0.5)), this.material.original.override({color: rightwall2.wallcolor}));
 
-            const leftwall1 = new Wall(-13.3, 9.8, 7, 4.8, this.colors[1]);
-            const leftwall2 = new Wall(-13.3, -4.8, 7, 9.8, this.colors[0]);
+            const leftwall1 = new Wall(-13.3, 9.8, 7, 4.8, this.colors[1], 13.3, 0);
+            const leftwall2 = new Wall(-13.3, -4.8, 7, 9.8, this.colors[0], 0, -13.3);
+            this.leftWalls[0] = leftwall1;
+            this.leftWalls[1] = leftwall2;
 
             //left side walls
             this.shapes.cube.draw(context, program_state, Mat4.translation(leftwall1.wallx, leftwall1.wally, leftwall1.wallz)
@@ -336,6 +344,10 @@ export class Inertia_Demo extends Simulation {
             const rightwall1 = new Wall(13.3, 10.5, 7, 4, this.colors[0]);
             const rightwall2 = new Wall(13.3, 3.5, 7, 3, this.colors[1]);
             const rightwall3 = new Wall(13.3, -7, 7, 7.5, this.colors[2]);
+
+            // this.rightWalls[0] = rightwall1;
+            // this.rightWalls[1] = rightwall2;
+            // this.rightWalls[2] = rightwall3;
 
             this.shapes.cube.draw(context, program_state, Mat4.translation(rightwall1.wallx, rightwall1.wally, rightwall1.wallz)
                 .times(Mat4.rotation(Math.PI, 1, 0, 0))
@@ -352,6 +364,10 @@ export class Inertia_Demo extends Simulation {
             const leftwall2 = new Wall(-13.3, -1.5, 7, 6, this.colors[0]);
             const leftwall3 = new Wall(-13.3, -11, 7, 3.5, this.colors[1]);
 
+            // this.leftWalls[0] = leftwall1;
+            // this.leftWalls[1] = leftwall2;
+            // this.leftWalls[2] = leftwall3;
+
             this.shapes.cube.draw(context, program_state, Mat4.translation(leftwall1.wallx, leftwall1.wally, leftwall1.wallz)
                 .times(Mat4.rotation(Math.PI, 1, 0, 0))
                 .times(Mat4.scale(0.7, leftwall1.wallscale, 0.5)), this.material.original.override({color: leftwall1.wallcolor}));
@@ -367,6 +383,10 @@ export class Inertia_Demo extends Simulation {
             const rightwall2 = new Wall(13.3, 4.5, 7, 4, this.colors[1]);
             const rightwall3 = new Wall(13.3, -4.5, 7, 5, this.colors[0]);
             const rightwall4 = new Wall(13.3, -12, 7, 2.5, this.colors[3]);
+            // this.rightWalls[0] = rightwall1;
+            // this.rightWalls[1] = rightwall2;
+            // this.rightWalls[2] = rightwall3;
+            // this.rightWalls[3] = rightwall4;
 
             this.shapes.cube.draw(context, program_state, Mat4.translation(rightwall1.wallx, rightwall1.wally, rightwall1.wallz)
                 .times(Mat4.rotation(Math.PI, 1, 0, 0))
@@ -386,6 +406,11 @@ export class Inertia_Demo extends Simulation {
             const leftwall2 = new Wall(-13.3, 4.5, 7, 6, this.colors[2]);
             const leftwall3 = new Wall(-13.3, -4, 7, 2.5, this.colors[3]);
             const leftwall4 = new Wall(-13.3, -10.4, 7, 3.9, this.colors[0]);
+
+            // this.leftWalls[0] = leftwall1;
+            // this.leftWalls[1] = leftwall2;
+            // this.leftWalls[2] = leftwall3;
+            // this.leftWalls[3] = leftwall4;
 
             this.shapes.cube.draw(context, program_state, Mat4.translation(leftwall1.wallx, leftwall1.wally, leftwall1.wallz)
                 .times(Mat4.rotation(Math.PI, 1, 0, 0))
@@ -481,8 +506,24 @@ export class Inertia_Demo extends Simulation {
                 this.game_over =true;
             }
             if((this.goRight &&this.x+1 >= this.rightbound)){
-                this.goRight = !this.goRight;
-                this.changeDirection = true;
+                if(this.count == 0){
+                    console.log(this.y);
+                    if(this.y > this.rightWalls[0].low && this.y < this.rightWalls[0].up){
+                        if(this.ballcolor == this.rightWalls[0].wallcolor){
+                            this.goRight = !this.goRight;
+                            this.changeDirection = true;
+                        }else{
+                            this.game_over = true;
+                        }
+                    }else if(this.y > this.rightWalls[1].low && this.y < this.rightWalls[1].up){
+                        if(this.ballcolor == this.rightWalls[1].wallcolor){
+                            this.goRight = !this.goRight;
+                            this.changeDirection = true;
+                        }else{
+                            this.game_over = true;
+                        }
+                    }
+                }
             }
             else if((!this.goRight &&this.x-1 <= this.leftbound)){
                 this.goRight = !this.goRight
@@ -493,7 +534,7 @@ export class Inertia_Demo extends Simulation {
             this.y = this.y + 0.015 * Math.sin(this.bounce_angle);
             if(this.bounce_angle >= 1.1*Math.PI)
             {
-                console.log("reach here");
+                // console.log("reach here");
                 this.bounced = true;
                 this.bounce_angle = 0.5 * Math.PI;
             }
@@ -523,11 +564,11 @@ export class Inertia_Demo extends Simulation {
                 this.x = this.x - 0.05;
             }
             model_transform = model_trans_rotate.times(Mat4.translation(this.x, this.y, this.z));
-            console.log("x: "+ this.x)
-            console.log("y: "+ this.y)
-            console.log("z: "+ this.z)
-
-            console.log("t: "+ t)
+            // console.log("x: "+ this.x)
+            // console.log("y: "+ this.y)
+            // console.log("z: "+ this.z)
+            //
+            // console.log("t: "+ t)
 
             this.shapes.sphere.draw(context, program_state,model_transform , this.material.original.override({color: this.ballcolor }));
         }
@@ -569,7 +610,6 @@ export class Inertia_Demo extends Simulation {
             while (this.count == prev_c){
                 this.count = Math.floor(Math.random() * 3);
             }
-
             for (let i = 0; i < this.count + 2; i++) {
                 this.colors[i] = color(Math.random(), Math.random(), Math.random(), 1.0);
             }
