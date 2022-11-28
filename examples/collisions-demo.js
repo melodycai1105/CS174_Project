@@ -166,7 +166,10 @@ export class Test_Data {
             grid: new Texture("assets/grid.png"),
             stars: new Texture("assets/stars.png"),
             text: new Texture("assets/text.png"),
-           // game: new Texture("assets/game.jpg"),
+            casino: new Texture("assets/casino.jpg"),
+            table: new Texture("assets/table.jpg"),
+            start: new Texture("assets/start.png"),
+            over: new Texture("assets/over.png")
         }
         this.shapes = {
             donut: new defs.Torus(15, 15, [[0, 2], [0, 1]]),
@@ -221,45 +224,50 @@ export class Inertia_Demo extends Simulation {
         this.bottom = -14;
         this.count = 0;
         this.changeDirection = false;
-        this.bounce_angle= 0.5 * Math.PI;
-        // this.color1 = color(1, 1, 1, 1);
-        // this.color2 = color(0, 0, 0, 1);
-        // this.color3 = color(1, 0, 0, 1);
-        // this.color4 = color(0, 0, 1, 1);
+
         this.colors = [color(1, 1, 1, 1), color(0, 0, 0, 1), color(1, 0, 0, 1), color(0, 0, 1, 1)];
         this.ballcolor = this.colors[0];
-
-        // const white = color(1, 1, 1, 1);
-        // const black = color(0, 0, 0, 1);
-        // const red = color(1, 0, 0, 1);
-        // const blue = color(0, 0, 1, 1);
-
 
         // this.ball_matrix = Mat4.identity().times(Mat4.rotation(-1.59820846, 0, 0, 1)).times(Mat4.translation(0, 3  , 6)).times(Mat4.rotation(Math.PI, 0, 0, 1));
         this.data = new Test_Data();
         this.shapes = Object.assign({}, this.data.shapes);
         this.shapes.square = new defs.Square();
         const shader = new defs.Fake_Bump_Map(1);
-        this.material = new Material(shader, {
-            color: color(.4, .8, .4, 1),
-            ambient: .4, diffusivity: 0.6 //texture: this.data.textures.stars
-        })
+        this.material = {
+            original:new Material(shader, {
+                color: color(.4, .8, .4, 1),
+                ambient: .9, diffusivity: 0.9 ,texture: this.data.textures.table
+            }),
+            test:new Material(shader, {
+                color: color(1, .8, 0.7, 1),
+                ambient: .5, diffusivity: 0.7 ,texture: this.data.textures.casino
+            }),
+            startGame:new Material(shader, {
+                color: color(0, 0, 0, 1),
+                ambient: .9, diffusivity: 0.9 ,texture: this.data.textures.start
+            }),
+            gameOver:new Material(shader, {
+                color: color(0, 0, 0, 1),
+                ambient: .9, diffusivity: 0.9 ,texture: this.data.textures.over
+            })
+        };
+        this.bounce_angle = 0.5 * Math.PI;
     }
 
     move_left() {
-            this.ball_matrix = this.ball_matrix.times(Mat4.translation(0,2,0));
+        this.ball_matrix = this.ball_matrix.times(Mat4.translation(0,2,0));
     }
 
     move_right() {
-            this.ball_matrix = this.ball_matrix.times(Mat4.translation(0,-2,0));
+        this.ball_matrix = this.ball_matrix.times(Mat4.translation(0,-2,0));
     }
 
     move_up() {
-            this.ball_matrix = this.ball_matrix.times(Mat4.translation(2,0,0));
+        this.ball_matrix = this.ball_matrix.times(Mat4.translation(2,0,0));
     }
 
     move_down() {
-            this.jump =True
+        this.ball_matrix = this.ball_matrix.times(Mat4.translation(-2,0,0));
     }
 
     // bounce(context, program_state){
@@ -377,9 +385,16 @@ export class Inertia_Demo extends Simulation {
     }
     //bounce the ball button
     make_control_panel() {
-        this.key_triggered_button("bounce the ball", ["q"], () => {
+        this.key_triggered_button("start game", ["z"],()=> {
             this.game_started = true;
-            this.bounced = false;
+        });
+        this.key_triggered_button("make game over", ["x"],()=> {
+            this.game_over = true;
+        });
+
+        this.key_triggered_button("bounce the ball", ["q"], () => {
+                this.game_started = true;
+                this.bounced = false;
             }
         );
         this.key_triggered_button("right", ["d"], () => this.move_right());
@@ -406,8 +421,27 @@ export class Inertia_Demo extends Simulation {
         const t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000;
 
         if(!this.game_started){
+            //game start lable
+            let start_matrix=Mat4.identity();
+            start_matrix = start_matrix.times(Mat4.translation(0, 0, 7))
+                //.times(Mat4.rotation(Math.PI, 1, 0, 0))
+                .times(Mat4.scale(15, 15, 1))
+
+            this.shapes.cube.draw(context, program_state, start_matrix,this.material.startGame);
+        }
+        if(this.game_over){
+            //game start lable
+            let start_matrix=Mat4.identity();
+            start_matrix = start_matrix.times(Mat4.translation(0, 0, 7))
+                //.times(Mat4.rotation(Math.PI, 1, 0, 0))
+                .times(Mat4.scale(15, 15, 1))
+
+            this.shapes.cube.draw(context, program_state, start_matrix,this.material.gameOver);
+        }
+
+        if(!this.game_started){
             model_transform = model_transform.times(Mat4.translation(0, 3, 6));
-            this.shapes.sphere.draw(context, program_state, model_transform , this.material.override({color: this.ballcolor}));
+            this.shapes.sphere.draw(context, program_state, model_transform , this.material.original.override({color: this.ballcolor}));
         }//else
         if(!this.bounced && (!this.game_over)) {
             this.bounce_angle += 0.5 * dt*1.2 * Math.PI;
