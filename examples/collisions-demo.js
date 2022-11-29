@@ -516,6 +516,7 @@ export class Inertia_Demo extends Simulation {
                         if(this.ballcolor == this.rightWalls[0].wallcolor){
                             this.goRight = !this.goRight;
                             this.changeDirection = true;
+                        
                         }else{
                             this.game_over = true;
                         }
@@ -523,6 +524,7 @@ export class Inertia_Demo extends Simulation {
                         if(this.ballcolor == this.rightWalls[1].wallcolor){
                             this.goRight = !this.goRight;
                             this.changeDirection = true;
+                   
                         }else{
                             this.game_over = true;
                         }
@@ -532,6 +534,7 @@ export class Inertia_Demo extends Simulation {
             else if((!this.goRight &&this.x-1 <= this.leftbound)){
                 this.goRight = !this.goRight
                 this.changeDirection = true;
+             
             }
 
             model_transform = model_transform.times(Mat4.translation(this.x, this.y, this.z));
@@ -554,11 +557,13 @@ export class Inertia_Demo extends Simulation {
                 this.goRight = !this.goRight
                 this.y = this.y+0.3
                 this.changeDirection = true;
+                
             }
             else if((!this.goRight &&this.x-1 <= this.leftbound)) {
                 this.goRight = !this.goRight
                 this.y = this.y + 0.3
                 this.changeDirection = true;
+                
             }
             let model_trans_rotate = Mat4.identity();
             this.y = this.y - 0.2;
