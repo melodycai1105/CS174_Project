@@ -223,6 +223,9 @@ export class Inertia_Demo extends Simulation {
         this.leftbound = -12.9;
         this.upperbound = 14.7;
         this.bottom = -14;
+        this.score = 0;
+        this.scoreElement = document.getElementById("scoreToUpdate").innerHTML = "<b>Current Score:</b> " + this.score;
+
 
         // this.ball_matrix = Mat4.identity().times(Mat4.rotation(-1.59820846, 0, 0, 1)).times(Mat4.translation(0, 3  , 6)).times(Mat4.rotation(Math.PI, 0, 0, 1));
         this.data = new Test_Data();
@@ -458,6 +461,7 @@ export class Inertia_Demo extends Simulation {
         }
         program_state.projection_transform = Mat4.perspective(Math.PI / 4, context.width / context.height, 1, 500);
         program_state.lights = [new Light(vec4(0, -5, -10, 1), color(1, 1, 1, 1), 100000)];
+ 
 
         //Building side walls
         let model_transform = Mat4.identity();
