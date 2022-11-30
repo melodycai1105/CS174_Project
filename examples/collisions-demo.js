@@ -3,88 +3,6 @@ import {defs, tiny} from './common.js';
 // Pull these names into this module's scope for convenience:
 const {vec3, unsafe3, vec4, color, Mat4, Light, Shape, Material, Shader, Texture, Scene} = tiny;
 
-// export class Body {
-    // **Body** can store and update the properties of a 3D body that incrementally
-    // moves from its previous place due to velocities.  It conforms to the
-    // approach outlined in the "Fix Your Timestep!" blog post by Glenn Fiedler.
-    // constructor(shape, material, size) {
-    //     Object.assign(this,
-    //         {shape, material, size})
-    // }
-
-    // (within some margin of distance).
-    // static intersect_cube(p, margin = 0) {
-    //     return p.every(value => value >= -1 - margin && value <= 1 + margin)
-    // }
-    //
-    // static intersect_sphere(p, margin = 0) {
-    //     return p.dot(p) < 1 + margin;
-    // }
-    //
-    // emplace(location_matrix, linear_velocity, angular_velocity, spin_axis = vec3(0, 0, 0).randomized(1).normalized()) {                               // emplace(): assign the body's initial values, or overwrite them.
-    //     this.center = location_matrix.times(vec4(0, 0, 0, 1)).to3();
-    //     this.rotation = Mat4.translation(...this.center.times(-1)).times(location_matrix);
-    //     this.previous = {center: this.center.copy(), rotation: this.rotation.copy()};
-    //     // drawn_location gets replaced with an interpolated quantity:
-    //     this.drawn_location = location_matrix;
-    //     this.temp_matrix = Mat4.identity();
-    //     return Object.assign(this, {linear_velocity, angular_velocity, spin_axis})
-    // }
-    //
-    // advance(time_amount) {
-    //     // advance(): Perform an integration (the simplistic Forward Euler method) to
-    //     // advance all the linear and angular velocities one time-step forward.
-    //     this.previous = {center: this.center.copy(), rotation: this.rotation.copy()};
-    //     // Apply the velocities scaled proportionally to real time (time_amount):
-    //     // Linear velocity first, then angular:
-    //     this.center = this.center.plus(this.linear_velocity.times(time_amount));
-    //     this.rotation.pre_multiply(Mat4.rotation(time_amount * this.angular_velocity, ...this.spin_axis));
-    // }
-
-    // The following are our various functions for testing a single point,
-    // p, against some analytically-known geometric volume formula
-
-    // blend_rotation(alpha) {
-        // blend_rotation(): Just naively do a linear blend of the rotations, which looks
-        // ok sometimes but otherwise produces shear matrices, a wrong result.
-
-        // TODO:  Replace this function with proper quaternion blending, and perhaps
-        // store this.rotation in quaternion form instead for compactness.
-    //     return this.rotation.map((x, i) => vec4(...this.previous.rotation[i]).mix(x, alpha));
-    // }
-    //
-    // blend_state(alpha) {
-    //     // blend_state(): Compute the final matrix we'll draw using the previous two physical
-    //     // locations the object occupied.  We'll interpolate between these two states as
-    //     // described at the end of the "Fix Your Timestep!" blog post.
-    //     this.drawn_location = Mat4.translation(...this.previous.center.mix(this.center, alpha))
-    //         .times(this.blend_rotation(alpha))
-    //         .times(Mat4.scale(...this.size));
-    // }
-
-    // check_if_colliding(b, collider) {
-        // check_if_colliding(): Collision detection function.
-        // DISCLAIMER:  The collision method shown below is not used by anyone; it's just very quick
-        // to code.  Making every collision body an ellipsoid is kind of a hack, and looping
-        // through a list of discrete sphere points to see if the ellipsoids intersect is *really* a
-        // hack (there are perfectly good analytic expressions that can test if two ellipsoids
-        // intersect without discretizing them into points).
-        // if (this == b)
-        //     return false;
-        // // Nothing collides with itself.
-        // // Convert sphere b to the frame where a is a unit sphere:
-        // const T = this.inverse.times(b.drawn_location, this.temp_matrix);
-        //
-        // const {intersect_test, points, leeway} = collider;
-        // For each vertex in that b, shift to the coordinate frame of
-        // a_inv*b.  Check if in that coordinate frame it penetrates
-        // the unit sphere at the origin.  Leave some leeway.
-//         return points.arrays.position.some(p =>
-//             intersect_test(T.times(p.to4(1)).to3(), leeway));
-//     }
-// }
-
-
 export class Simulation extends Scene {
     // **Simulation** manages the stepping of simulation time.  Subclass it when making
     // a Scene that is a physics demo.  This technique is careful to totally decouple
@@ -140,15 +58,6 @@ export class Simulation extends Scene {
             box.textContent = this.steps_taken + " timesteps were taken so far."
         });
     }
-
-    // display(context, program_state) {
-    //     // display(): advance the time and state of our whole simulation.
-    //     if (program_state.animate)
-    //         this.simulate(program_state.animation_delta_time);
-    //     // Draw each shape at its current location:
-    //     for (let b of this.bodies)
-    //         b.shape.draw(context, program_state, b.drawn_location, b.material);
-    // }
 
     update_state(dt)      // update_state(): Your subclass of Simulation has to override this abstract function.
     {
@@ -315,8 +224,8 @@ export class Inertia_Demo extends Simulation {
 
     generateWalls(context, program_state){
         if(this.count == 0) {
-            const rightwall1 = new Wall(13.3, 7.5, 7, 7, this.colors[0], 13.34, 0.05);
-            const rightwall2 = new Wall(13.3, -7, 7, 7.5, this.colors[1], 0.05, -13.34);
+            const rightwall1 = new Wall(13.3, 7.5, 7, 7, this.colors[0], 13.5, 0.4999999999999996);
+            const rightwall2 = new Wall(13.3, -7, 7, 7.5, this.colors[1], 0.4999999999999996, -13.7);
             this.rightWalls[0] = rightwall1;
             this.rightWalls[1] = rightwall2;
 
@@ -329,8 +238,8 @@ export class Inertia_Demo extends Simulation {
                 .times(Mat4.rotation(Math.PI, 1, 0, 0))
                 .times(Mat4.scale(0.7, rightwall2.wallscale, 0.5)), this.material.original.override({color: rightwall2.wallcolor}));
 
-            const leftwall1 = new Wall(-13.3, 9.8, 7, 4.8, this.colors[1], 13.3, 0);
-            const leftwall2 = new Wall(-13.3, -4.8, 7, 9.8, this.colors[0], 0, -13.3);
+            const leftwall1 = new Wall(-13.3, 9.8, 7, 4.8, this.colors[1], 13.5, 5.1);
+            const leftwall2 = new Wall(-13.3, -4.8, 7, 9.8, this.colors[0], 5.1, -13.7);
             this.leftWalls[0] = leftwall1;
             this.leftWalls[1] = leftwall2;
 
@@ -344,9 +253,9 @@ export class Inertia_Demo extends Simulation {
 
         }else if(this.count == 1){
             //right side wall
-            const rightwall1 = new Wall(13.3, 10.5, 7, 4, this.colors[0]);
-            const rightwall2 = new Wall(13.3, 3.5, 7, 3, this.colors[1]);
-            const rightwall3 = new Wall(13.3, -7, 7, 7.5, this.colors[2]);
+            const rightwall1 = new Wall(13.3, 10.5, 7, 4, this.colors[0], 13.5, 6.7);
+            const rightwall2 = new Wall(13.3, 3.5, 7, 3, this.colors[1], 6.7, 0.5);
+            const rightwall3 = new Wall(13.3, -7, 7, 7.5, this.colors[2], 0.5, -13.7);
             this.rightWalls[0] = rightwall1;
             this.rightWalls[1] = rightwall2;
             this.rightWalls[2] = rightwall3;
@@ -362,9 +271,9 @@ export class Inertia_Demo extends Simulation {
                 .times(Mat4.scale(0.7, rightwall3.wallscale, 0.5)), this.material.original.override({color: rightwall3.wallcolor}));
 
             //left side wall
-            const leftwall1 = new Wall(-13.3, 9.5, 7, 5, this.colors[2]);
-            const leftwall2 = new Wall(-13.3, -1.5, 7, 6, this.colors[0]);
-            const leftwall3 = new Wall(-13.3, -11, 7, 3.5, this.colors[1]);
+            const leftwall1 = new Wall(-13.3, 9.5, 7, 5, this.colors[2], 13.5, 4.5);
+            const leftwall2 = new Wall(-13.3, -1.5, 7, 6, this.colors[0], 4.5, -7.7);
+            const leftwall3 = new Wall(-13.3, -11, 7, 3.5, this.colors[1], -7.7, -13.7);
 
             this.leftWalls[0] = leftwall1;
             this.leftWalls[1] = leftwall2;
@@ -381,14 +290,14 @@ export class Inertia_Demo extends Simulation {
                 .times(Mat4.scale(0.7, leftwall3.wallscale, 0.5)), this.material.original.override({color: leftwall3.wallcolor}));
        }else if(this.count == 2){
             //right side wall
-            const rightwall1 = new Wall(13.3, 11.5, 7, 3, this.colors[2]);
-            const rightwall2 = new Wall(13.3, 4.5, 7, 4, this.colors[1]);
-            const rightwall3 = new Wall(13.3, -4.5, 7, 5, this.colors[0]);
-            const rightwall4 = new Wall(13.3, -12, 7, 2.5, this.colors[3]);
-            // this.rightWalls[0] = rightwall1;
-            // this.rightWalls[1] = rightwall2;
-            // this.rightWalls[2] = rightwall3;
-            // this.rightWalls[3] = rightwall4;
+            const rightwall1 = new Wall(13.3, 11.5, 7, 3, this.colors[2], 13.5, 8.7);
+            const rightwall2 = new Wall(13.3, 4.5, 7, 4, this.colors[1], 8.7, 0.5);
+            const rightwall3 = new Wall(13.3, -4.5, 7, 5, this.colors[0], 0.5, -9.9);
+            const rightwall4 = new Wall(13.3, -12, 7, 2.5, this.colors[3], -9.9, -13.7);
+            this.rightWalls[0] = rightwall1;
+            this.rightWalls[1] = rightwall2;
+            this.rightWalls[2] = rightwall3;
+            this.rightWalls[3] = rightwall4;
 
             this.shapes.cube.draw(context, program_state, Mat4.translation(rightwall1.wallx, rightwall1.wally, rightwall1.wallz)
                 .times(Mat4.rotation(Math.PI, 1, 0, 0))
@@ -404,15 +313,15 @@ export class Inertia_Demo extends Simulation {
                 .times(Mat4.scale(0.7, rightwall4.wallscale, 0.5)), this.material.original.override({color: rightwall4.wallcolor}));
 
             //left side wall
-            const leftwall1 = new Wall(-13.3, 12.5, 7, 2, this.colors[1]);
-            const leftwall2 = new Wall(-13.3, 4.5, 7, 6, this.colors[2]);
-            const leftwall3 = new Wall(-13.3, -4, 7, 2.5, this.colors[3]);
-            const leftwall4 = new Wall(-13.3, -10.4, 7, 3.9, this.colors[0]);
+            const leftwall1 = new Wall(-13.3, 12.5, 7, 2, this.colors[1], 13.5, 10.7);
+            const leftwall2 = new Wall(-13.3, 4.5, 7, 6, this.colors[2], 10.7, -1.7);
+            const leftwall3 = new Wall(-13.3, -4, 7, 2.5, this.colors[3], -1.7, -6.7);
+            const leftwall4 = new Wall(-13.3, -10.4, 7, 3.9, this.colors[0], -6.7, -13.7);
 
-            // this.leftWalls[0] = leftwall1;
-            // this.leftWalls[1] = leftwall2;
-            // this.leftWalls[2] = leftwall3;
-            // this.leftWalls[3] = leftwall4;
+            this.leftWalls[0] = leftwall1;
+            this.leftWalls[1] = leftwall2;
+            this.leftWalls[2] = leftwall3;
+            this.leftWalls[3] = leftwall4;
 
             this.shapes.cube.draw(context, program_state, Mat4.translation(leftwall1.wallx, leftwall1.wally, leftwall1.wallz)
                 .times(Mat4.rotation(Math.PI, 1, 0, 0))
@@ -493,67 +402,91 @@ export class Inertia_Demo extends Simulation {
             this.shapes.sphere.draw(context, program_state, model_transform , this.material.original.override({color: this.ballcolor}));
         }//else
         if(!this.bounced && (!this.game_over)) {
-            this.bounce_angle += 0.5 * dt*1.2 * Math.PI;
+            this.bounce_angle += 0.5 * dt * 1.2 * Math.PI;
             let model_transform = Mat4.identity();
 
             //bounce to right is this.x - 0.17 * Math.cos(this.bounce_angle);
             //bounce to left is this.x + 0.17 * Math.cos(this.bounce_angle);
-            if(this.goRight){
-                this.x= this.x - 0.05 * Math.cos(this.bounce_angle);
-            }else{
-                this.x= this.x + 0.05 * Math.cos(this.bounce_angle);
+            if (this.goRight) {
+                this.x = this.x - 0.05 * Math.cos(this.bounce_angle);
+            } else {
+                this.x = this.x + 0.05 * Math.cos(this.bounce_angle);
             }
 
-            this.y = this.y + 0.15* Math.sin(this.bounce_angle);
-            if(this.y +1 >= this.upperbound || this.y <= this.bottom){
-                this.game_over =true;
+            this.y = this.y + 0.15 * Math.sin(this.bounce_angle);
+            if (this.y + 1 >= this.upperbound || this.y <= this.bottom) {
+                this.game_over = true;
             }
-            if((this.goRight &&this.x+1 >= this.rightbound)){
+            if ((this.goRight && this.x + 1 >= this.rightbound)) {
                 console.log(this.y);
-                if(this.count == 0){
-                    if(this.y > this.rightWalls[0].low && this.y < this.rightWalls[0].up){
-                        if(this.ballcolor == this.rightWalls[0].wallcolor){
+                if (this.y > this.rightWalls[0].low && this.y < this.rightWalls[0].up) {
+                    if (this.ballcolor == this.rightWalls[0].wallcolor) {
+                        this.goRight = !this.goRight;
+                        this.changeDirection = true;
+                    } else {
+                        this.game_over = true;
+                    }
+                } else if (this.y > this.rightWalls[1].low && this.y < this.rightWalls[1].up) {
+                    if (this.ballcolor == this.rightWalls[1].wallcolor) {
+                        this.goRight = !this.goRight;
+                        this.changeDirection = true;
+                    } else {
+                        this.game_over = true;
+                    }
+                } else if (this.count == 1) {
+                    if (this.y > this.rightWalls[2].low && this.y < this.rightWalls[2].up) {
+                        if (this.ballcolor == this.rightWalls[2].wallcolor) {
                             this.goRight = !this.goRight;
                             this.changeDirection = true;
-                        }else{
-                            this.game_over = true;
-                        }
-                    }else if(this.y > this.rightWalls[1].low && this.y < this.rightWalls[1].up){
-                        if(this.ballcolor == this.rightWalls[1].wallcolor){
-                            this.goRight = !this.goRight;
-                            this.changeDirection = true;
-                        }else{
+                        } else {
                             this.game_over = true;
                         }
                     }
-                }else{
-                    this.goRight = !this.goRight;
-                    this.y = this.y+0.3
-                    this.changeDirection = true;
+                } else if (this.count == 2) {
+                    if (this.y > this.rightWalls[3].low && this.y < this.rightWalls[3].up) {
+                        if (this.ballcolor == this.rightWalls[3].wallcolor) {
+                            this.goRight = !this.goRight;
+                            this.changeDirection = true;
+                        } else {
+                            this.game_over = true;
+                        }
+                    }
                 }
             }
             else if((!this.goRight &&this.x-1 <= this.leftbound)){
                 console.log((this.y))
-                if(this.count == 0) {
-                    if (this.y > this.leftWalls[0].low && this.y < this.leftWalls[0].up) {
-                        if (this.ballcolor == this.leftWalls[0].wallcolor) {
-                            this.goRight = !this.goRight;
-                            this.changeDirection = true;
-                        } else {
-                            this.game_over = true;
-                        }
-                    } else if (this.y > this.leftWalls[1].low && this.y < this.leftWalls[1].up) {
-                        if (this.ballcolor == this.leftWalls[1].wallcolor) {
+                if (this.y > this.leftWalls[0].low && this.y < this.leftWalls[0].up) {
+                    if (this.ballcolor == this.leftWalls[0].wallcolor) {
+                        this.goRight = !this.goRight;
+                        this.changeDirection = true;
+                    } else {
+                        this.game_over = true;
+                    }
+                } else if (this.y > this.leftWalls[1].low && this.y < this.leftWalls[1].up) {
+                    if (this.ballcolor == this.leftWalls[1].wallcolor) {
+                        this.goRight = !this.goRight;
+                        this.changeDirection = true;
+                    } else {
+                        this.game_over = true;
+                    }
+                } else if (this.count == 1) {
+                    if (this.y > this.leftWalls[2].low && this.y < this.leftWalls[2].up) {
+                        if (this.ballcolor == this.leftWalls[2].wallcolor) {
                             this.goRight = !this.goRight;
                             this.changeDirection = true;
                         } else {
                             this.game_over = true;
                         }
                     }
-                }else{
-                    this.goRight = !this.goRight;
-                    this.y = this.y+0.3
-                    this.changeDirection = true;
+                } else if (this.count == 2) {
+                    if (this.y > this.leftWalls[3].low && this.y < this.leftWalls[3].up) {
+                        if (this.ballcolor == this.leftWalls[3].wallcolor) {
+                            this.goRight = !this.goRight;
+                            this.changeDirection = true;
+                        } else {
+                            this.game_over = true;
+                        }
+                    }
                 }
             }
 
@@ -575,36 +508,76 @@ export class Inertia_Demo extends Simulation {
         else if(this.game_started && (!this.game_over)){
             if((this.goRight &&this.x+1 >= this.rightbound)){
                 console.log(this.y);
-                if(this.count == 0){
-                    if(this.y > this.rightWalls[0].low && this.y < this.rightWalls[0].up){
-                        if(this.ballcolor == this.rightWalls[0].wallcolor){
+                if (this.y > this.rightWalls[0].low && this.y < this.rightWalls[0].up) {
+                    if (this.ballcolor == this.rightWalls[0].wallcolor) {
+                        this.goRight = !this.goRight;
+                        this.changeDirection = true;
+                    } else {
+                        this.game_over = true;
+                    }
+                } else if (this.y > this.rightWalls[1].low && this.y < this.rightWalls[1].up) {
+                    if (this.ballcolor == this.rightWalls[1].wallcolor) {
+                        this.goRight = !this.goRight;
+                        this.changeDirection = true;
+                    } else {
+                        this.game_over = true;
+                    }
+                } else if (this.count == 1) {
+                    if (this.y > this.rightWalls[2].low && this.y < this.rightWalls[2].up) {
+                        if (this.ballcolor == this.rightWalls[2].wallcolor) {
                             this.goRight = !this.goRight;
-                            this.y = this.y+0.3
                             this.changeDirection = true;
-                        }else{
-                            this.game_over = true;
-                        }
-                    }else if(this.y > this.rightWalls[1].low && this.y < this.rightWalls[1].up){
-                        if(this.ballcolor == this.rightWalls[1].wallcolor){
-                            this.goRight = !this.goRight;
-                            this.y = this.y+0.3
-                            this.changeDirection = true;
-                        }else{
+                        } else {
                             this.game_over = true;
                         }
                     }
-                }else{
-                    this.goRight = !this.goRight;
-                    this.y = this.y+0.3
-                    this.changeDirection = true;
+                } else if (this.count == 2) {
+                    if (this.y > this.rightWalls[3].low && this.y < this.rightWalls[3].up) {
+                        if (this.ballcolor == this.rightWalls[3].wallcolor) {
+                            this.goRight = !this.goRight;
+                            this.changeDirection = true;
+                        } else {
+                            this.game_over = true;
+                        }
+                    }
                 }
             }
             else if((!this.goRight &&this.x-1 <= this.leftbound)) {
                 console.log((this.y))
-                this.goRight = !this.goRight
-                this.y = this.y + 0.3
-                this.changeDirection = true;
-                
+
+                if (this.y > this.leftWalls[0].low && this.y < this.leftWalls[0].up) {
+                    if (this.ballcolor == this.leftWalls[0].wallcolor) {
+                        this.goRight = !this.goRight;
+                        this.changeDirection = true;
+                    } else {
+                        this.game_over = true;
+                    }
+                } else if (this.y > this.leftWalls[1].low && this.y < this.leftWalls[1].up) {
+                    if (this.ballcolor == this.leftWalls[1].wallcolor) {
+                        this.goRight = !this.goRight;
+                        this.changeDirection = true;
+                    } else {
+                        this.game_over = true;
+                    }
+                } else if (this.count == 1) {
+                    if (this.y > this.leftWalls[2].low && this.y < this.leftWalls[2].up) {
+                        if (this.ballcolor == this.leftWalls[2].wallcolor) {
+                            this.goRight = !this.goRight;
+                            this.changeDirection = true;
+                        } else {
+                            this.game_over = true;
+                        }
+                    }
+                } else if (this.count == 2) {
+                    if (this.y > this.leftWalls[3].low && this.y < this.leftWalls[3].up) {
+                        if (this.ballcolor == this.leftWalls[3].wallcolor) {
+                            this.goRight = !this.goRight;
+                            this.changeDirection = true;
+                        } else {
+                            this.game_over = true;
+                        }
+                    }
+                }
             }
             let model_trans_rotate = Mat4.identity();
             this.y = this.y - 0.2;
