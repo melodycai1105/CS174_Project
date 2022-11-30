@@ -315,8 +315,8 @@ export class Inertia_Demo extends Simulation {
 
     generateWalls(context, program_state){
         if(this.count == 0) {
-            const rightwall1 = new Wall(13.3, 7.5, 7, 7, this.colors[0], 13.3, 0);
-            const rightwall2 = new Wall(13.3, -7, 7, 7.5, this.colors[1], 0, -13.3);
+            const rightwall1 = new Wall(13.3, 7.5, 7, 7, this.colors[0], 13.34, 0.05);
+            const rightwall2 = new Wall(13.3, -7, 7, 7.5, this.colors[1], 0.05, -13.34);
             this.rightWalls[0] = rightwall1;
             this.rightWalls[1] = rightwall2;
 
@@ -347,10 +347,9 @@ export class Inertia_Demo extends Simulation {
             const rightwall1 = new Wall(13.3, 10.5, 7, 4, this.colors[0]);
             const rightwall2 = new Wall(13.3, 3.5, 7, 3, this.colors[1]);
             const rightwall3 = new Wall(13.3, -7, 7, 7.5, this.colors[2]);
-
-            // this.rightWalls[0] = rightwall1;
-            // this.rightWalls[1] = rightwall2;
-            // this.rightWalls[2] = rightwall3;
+            this.rightWalls[0] = rightwall1;
+            this.rightWalls[1] = rightwall2;
+            this.rightWalls[2] = rightwall3;
 
             this.shapes.cube.draw(context, program_state, Mat4.translation(rightwall1.wallx, rightwall1.wally, rightwall1.wallz)
                 .times(Mat4.rotation(Math.PI, 1, 0, 0))
@@ -367,9 +366,9 @@ export class Inertia_Demo extends Simulation {
             const leftwall2 = new Wall(-13.3, -1.5, 7, 6, this.colors[0]);
             const leftwall3 = new Wall(-13.3, -11, 7, 3.5, this.colors[1]);
 
-            // this.leftWalls[0] = leftwall1;
-            // this.leftWalls[1] = leftwall2;
-            // this.leftWalls[2] = leftwall3;
+            this.leftWalls[0] = leftwall1;
+            this.leftWalls[1] = leftwall2;
+            this.leftWalls[2] = leftwall3;
 
             this.shapes.cube.draw(context, program_state, Mat4.translation(leftwall1.wallx, leftwall1.wally, leftwall1.wallz)
                 .times(Mat4.rotation(Math.PI, 1, 0, 0))
@@ -510,8 +509,8 @@ export class Inertia_Demo extends Simulation {
                 this.game_over =true;
             }
             if((this.goRight &&this.x+1 >= this.rightbound)){
+                console.log(this.y);
                 if(this.count == 0){
-                    console.log(this.y);
                     if(this.y > this.rightWalls[0].low && this.y < this.rightWalls[0].up){
                         if(this.ballcolor == this.rightWalls[0].wallcolor){
                             this.goRight = !this.goRight;
@@ -527,12 +526,35 @@ export class Inertia_Demo extends Simulation {
                             this.game_over = true;
                         }
                     }
+                }else{
+                    this.goRight = !this.goRight;
+                    this.y = this.y+0.3
+                    this.changeDirection = true;
                 }
             }
             else if((!this.goRight &&this.x-1 <= this.leftbound)){
-                this.goRight = !this.goRight
-                this.changeDirection = true;
-             
+                console.log((this.y))
+                if(this.count == 0) {
+                    if (this.y > this.leftWalls[0].low && this.y < this.leftWalls[0].up) {
+                        if (this.ballcolor == this.leftWalls[0].wallcolor) {
+                            this.goRight = !this.goRight;
+                            this.changeDirection = true;
+                        } else {
+                            this.game_over = true;
+                        }
+                    } else if (this.y > this.leftWalls[1].low && this.y < this.leftWalls[1].up) {
+                        if (this.ballcolor == this.leftWalls[1].wallcolor) {
+                            this.goRight = !this.goRight;
+                            this.changeDirection = true;
+                        } else {
+                            this.game_over = true;
+                        }
+                    }
+                }else{
+                    this.goRight = !this.goRight;
+                    this.y = this.y+0.3
+                    this.changeDirection = true;
+                }
             }
 
             model_transform = model_transform.times(Mat4.translation(this.x, this.y, this.z));
@@ -571,9 +593,14 @@ export class Inertia_Demo extends Simulation {
                             this.game_over = true;
                         }
                     }
+                }else{
+                    this.goRight = !this.goRight;
+                    this.y = this.y+0.3
+                    this.changeDirection = true;
                 }
             }
             else if((!this.goRight &&this.x-1 <= this.leftbound)) {
+                console.log((this.y))
                 this.goRight = !this.goRight
                 this.y = this.y + 0.3
                 this.changeDirection = true;
