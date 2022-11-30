@@ -516,7 +516,6 @@ export class Inertia_Demo extends Simulation {
                         if(this.ballcolor == this.rightWalls[0].wallcolor){
                             this.goRight = !this.goRight;
                             this.changeDirection = true;
-                        
                         }else{
                             this.game_over = true;
                         }
@@ -524,7 +523,6 @@ export class Inertia_Demo extends Simulation {
                         if(this.ballcolor == this.rightWalls[1].wallcolor){
                             this.goRight = !this.goRight;
                             this.changeDirection = true;
-                   
                         }else{
                             this.game_over = true;
                         }
@@ -554,10 +552,26 @@ export class Inertia_Demo extends Simulation {
         }
         else if(this.game_started && (!this.game_over)){
             if((this.goRight &&this.x+1 >= this.rightbound)){
-                this.goRight = !this.goRight
-                this.y = this.y+0.3
-                this.changeDirection = true;
-                
+                console.log(this.y);
+                if(this.count == 0){
+                    if(this.y > this.rightWalls[0].low && this.y < this.rightWalls[0].up){
+                        if(this.ballcolor == this.rightWalls[0].wallcolor){
+                            this.goRight = !this.goRight;
+                            this.y = this.y+0.3
+                            this.changeDirection = true;
+                        }else{
+                            this.game_over = true;
+                        }
+                    }else if(this.y > this.rightWalls[1].low && this.y < this.rightWalls[1].up){
+                        if(this.ballcolor == this.rightWalls[1].wallcolor){
+                            this.goRight = !this.goRight;
+                            this.y = this.y+0.3
+                            this.changeDirection = true;
+                        }else{
+                            this.game_over = true;
+                        }
+                    }
+                }
             }
             else if((!this.goRight &&this.x-1 <= this.leftbound)) {
                 this.goRight = !this.goRight
