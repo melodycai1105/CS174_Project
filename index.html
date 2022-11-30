@@ -6,16 +6,17 @@
 <head>
     <style>
         scoreBoard {
-            color: blue;
-            left: 10%;
+            color: black;
             line-height: 200px;
             margin: auto;
-            margin-top: 5px;
-            position: absolute;
+            margin: 10px 0;
             top: 8%;
-            width: 30%;
-            font-size: 25px;
+            padding: 5px;
+            width: 100%;
+            font-size: 20px;
             font-family: Verdana, Arial;
+            border: 5px solid powderblue;
+            border-style: dotted dashed solid double;
         }
         
         
@@ -42,5 +43,8 @@
 </script>
 
 </body>
-<scoreBoard id="scoreToUpdate"  style="position: fixed; left: 20px; top:-65px;">Score!!</scoreBoard>
+<div style="position: fixed; left: 25%; top:-70px; bottom: 10px;">
+    <scoreBoard id="scoreToUpdate"  ></scoreBoard>
+</div>
+
 </html>
