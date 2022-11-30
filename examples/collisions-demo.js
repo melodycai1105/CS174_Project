@@ -423,6 +423,7 @@ export class Inertia_Demo extends Simulation {
                     if (this.ballcolor == this.rightWalls[0].wallcolor) {
                         this.goRight = !this.goRight;
                         this.changeDirection = true;
+                        this.score += 1;
                     } else {
                         this.game_over = true;
                     }
@@ -430,6 +431,7 @@ export class Inertia_Demo extends Simulation {
                     if (this.ballcolor == this.rightWalls[1].wallcolor) {
                         this.goRight = !this.goRight;
                         this.changeDirection = true;
+                        this.score += 1;
                     } else {
                         this.game_over = true;
                     }
@@ -438,20 +440,32 @@ export class Inertia_Demo extends Simulation {
                         if (this.ballcolor == this.rightWalls[2].wallcolor) {
                             this.goRight = !this.goRight;
                             this.changeDirection = true;
+                            this.score += 1;
                         } else {
                             this.game_over = true;
                         }
                     }
                 } else if (this.count == 2) {
-                    if (this.y > this.rightWalls[3].low && this.y < this.rightWalls[3].up) {
+                    if (this.y > this.rightWalls[2].low && this.y < this.rightWalls[2].up) {
+                        if (this.ballcolor == this.rightWalls[2].wallcolor) {
+                            this.goRight = !this.goRight;
+                            this.changeDirection = true;
+                            this.score += 1;
+                        } else {
+                            this.game_over = true;
+                        }
+                    }
+                    else if (this.y > this.rightWalls[3].low && this.y < this.rightWalls[3].up) {
                         if (this.ballcolor == this.rightWalls[3].wallcolor) {
                             this.goRight = !this.goRight;
                             this.changeDirection = true;
+                            this.score += 1;
                         } else {
                             this.game_over = true;
                         }
                     }
                 }
+                console.log(this.score)
             }
             else if((!this.goRight &&this.x-1 <= this.leftbound)){
                 console.log((this.y))
@@ -459,6 +473,7 @@ export class Inertia_Demo extends Simulation {
                     if (this.ballcolor == this.leftWalls[0].wallcolor) {
                         this.goRight = !this.goRight;
                         this.changeDirection = true;
+                        this.score += 1;
                     } else {
                         this.game_over = true;
                     }
@@ -466,6 +481,7 @@ export class Inertia_Demo extends Simulation {
                     if (this.ballcolor == this.leftWalls[1].wallcolor) {
                         this.goRight = !this.goRight;
                         this.changeDirection = true;
+                        this.score += 1;
                     } else {
                         this.game_over = true;
                     }
@@ -474,20 +490,32 @@ export class Inertia_Demo extends Simulation {
                         if (this.ballcolor == this.leftWalls[2].wallcolor) {
                             this.goRight = !this.goRight;
                             this.changeDirection = true;
+                            this.score += 1;
                         } else {
                             this.game_over = true;
                         }
                     }
                 } else if (this.count == 2) {
-                    if (this.y > this.leftWalls[3].low && this.y < this.leftWalls[3].up) {
+                    if (this.y > this.leftWalls[2].low && this.y < this.leftWalls[2].up) {
+                        if (this.ballcolor == this.leftWalls[2].wallcolor) {
+                            this.goRight = !this.goRight;
+                            this.changeDirection = true;
+                            this.score += 1;
+                        } else {
+                            this.game_over = true;
+                        }
+                    }
+                    else if (this.y > this.leftWalls[3].low && this.y < this.leftWalls[3].up) {
                         if (this.ballcolor == this.leftWalls[3].wallcolor) {
                             this.goRight = !this.goRight;
                             this.changeDirection = true;
+                            this.score += 1;
                         } else {
                             this.game_over = true;
                         }
                     }
                 }
+                console.log(this.score)
             }
 
             model_transform = model_transform.times(Mat4.translation(this.x, this.y, this.z));
@@ -512,6 +540,7 @@ export class Inertia_Demo extends Simulation {
                     if (this.ballcolor == this.rightWalls[0].wallcolor) {
                         this.goRight = !this.goRight;
                         this.changeDirection = true;
+                        this.score += 1;
                     } else {
                         this.game_over = true;
                     }
@@ -519,6 +548,7 @@ export class Inertia_Demo extends Simulation {
                     if (this.ballcolor == this.rightWalls[1].wallcolor) {
                         this.goRight = !this.goRight;
                         this.changeDirection = true;
+                        this.score += 1;
                     } else {
                         this.game_over = true;
                     }
@@ -527,20 +557,32 @@ export class Inertia_Demo extends Simulation {
                         if (this.ballcolor == this.rightWalls[2].wallcolor) {
                             this.goRight = !this.goRight;
                             this.changeDirection = true;
+                            this.score += 1;
                         } else {
                             this.game_over = true;
                         }
                     }
                 } else if (this.count == 2) {
-                    if (this.y > this.rightWalls[3].low && this.y < this.rightWalls[3].up) {
+                    if (this.y > this.rightWalls[2].low && this.y < this.rightWalls[2].up) {
+                        if (this.ballcolor == this.rightWalls[2].wallcolor) {
+                            this.goRight = !this.goRight;
+                            this.changeDirection = true;
+                            this.score += 1;
+                        } else {
+                            this.game_over = true;
+                        }
+                    }
+                    else if (this.y > this.rightWalls[3].low && this.y < this.rightWalls[3].up) {
                         if (this.ballcolor == this.rightWalls[3].wallcolor) {
                             this.goRight = !this.goRight;
                             this.changeDirection = true;
+                            this.score += 1;
                         } else {
                             this.game_over = true;
                         }
                     }
                 }
+                console.log(this.score)
             }
             else if((!this.goRight &&this.x-1 <= this.leftbound)) {
                 console.log((this.y))
@@ -549,6 +591,7 @@ export class Inertia_Demo extends Simulation {
                     if (this.ballcolor == this.leftWalls[0].wallcolor) {
                         this.goRight = !this.goRight;
                         this.changeDirection = true;
+                        this.score += 1;
                     } else {
                         this.game_over = true;
                     }
@@ -556,6 +599,7 @@ export class Inertia_Demo extends Simulation {
                     if (this.ballcolor == this.leftWalls[1].wallcolor) {
                         this.goRight = !this.goRight;
                         this.changeDirection = true;
+                        this.score += 1;
                     } else {
                         this.game_over = true;
                     }
@@ -564,20 +608,32 @@ export class Inertia_Demo extends Simulation {
                         if (this.ballcolor == this.leftWalls[2].wallcolor) {
                             this.goRight = !this.goRight;
                             this.changeDirection = true;
+                            this.score += 1;
                         } else {
                             this.game_over = true;
                         }
                     }
                 } else if (this.count == 2) {
-                    if (this.y > this.leftWalls[3].low && this.y < this.leftWalls[3].up) {
+                    if (this.y > this.leftWalls[2].low && this.y < this.leftWalls[2].up) {
+                        if (this.ballcolor == this.leftWalls[2].wallcolor) {
+                            this.goRight = !this.goRight;
+                            this.changeDirection = true;
+                            this.score += 1;
+                        } else {
+                            this.game_over = true;
+                        }
+                    }
+                    else if (this.y > this.leftWalls[3].low && this.y < this.leftWalls[3].up) {
                         if (this.ballcolor == this.leftWalls[3].wallcolor) {
                             this.goRight = !this.goRight;
                             this.changeDirection = true;
+                            this.score += 1;
                         } else {
                             this.game_over = true;
                         }
                     }
                 }
+                console.log(this.score)
             }
             let model_trans_rotate = Mat4.identity();
             this.y = this.y - 0.2;
