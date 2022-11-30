@@ -418,12 +418,13 @@ export class Inertia_Demo extends Simulation {
                 this.game_over = true;
             }
             if ((this.goRight && this.x + 1 >= this.rightbound)) {
-                console.log(this.y);
+                // console.log(this.y);
                 if (this.y > this.rightWalls[0].low && this.y < this.rightWalls[0].up) {
                     if (this.ballcolor == this.rightWalls[0].wallcolor) {
                         this.goRight = !this.goRight;
                         this.changeDirection = true;
                         this.score += 1;
+                        this.scoreElement = document.getElementById("scoreToUpdate").innerHTML = "<b>Current Score:</b> " + this.score;
                     } else {
                         this.game_over = true;
                     }
@@ -432,6 +433,7 @@ export class Inertia_Demo extends Simulation {
                         this.goRight = !this.goRight;
                         this.changeDirection = true;
                         this.score += 1;
+                        this.scoreElement = document.getElementById("scoreToUpdate").innerHTML = "<b>Current Score:</b> " + this.score;
                     } else {
                         this.game_over = true;
                     }
@@ -441,6 +443,7 @@ export class Inertia_Demo extends Simulation {
                             this.goRight = !this.goRight;
                             this.changeDirection = true;
                             this.score += 1;
+                            this.scoreElement = document.getElementById("scoreToUpdate").innerHTML = "<b>Current Score:</b> " + this.score;
                         } else {
                             this.game_over = true;
                         }
@@ -451,6 +454,7 @@ export class Inertia_Demo extends Simulation {
                             this.goRight = !this.goRight;
                             this.changeDirection = true;
                             this.score += 1;
+                            this.scoreElement = document.getElementById("scoreToUpdate").innerHTML = "<b>Current Score:</b> " + this.score;
                         } else {
                             this.game_over = true;
                         }
@@ -460,6 +464,7 @@ export class Inertia_Demo extends Simulation {
                             this.goRight = !this.goRight;
                             this.changeDirection = true;
                             this.score += 1;
+                            this.scoreElement = document.getElementById("scoreToUpdate").innerHTML = "<b>Current Score:</b> " + this.score;
                         } else {
                             this.game_over = true;
                         }
@@ -474,6 +479,7 @@ export class Inertia_Demo extends Simulation {
                         this.goRight = !this.goRight;
                         this.changeDirection = true;
                         this.score += 1;
+                        this.scoreElement = document.getElementById("scoreToUpdate").innerHTML = "<b>Current Score:</b> " + this.score;
                     } else {
                         this.game_over = true;
                     }
@@ -482,6 +488,7 @@ export class Inertia_Demo extends Simulation {
                         this.goRight = !this.goRight;
                         this.changeDirection = true;
                         this.score += 1;
+                        this.scoreElement = document.getElementById("scoreToUpdate").innerHTML = "<b>Current Score:</b> " + this.score;
                     } else {
                         this.game_over = true;
                     }
@@ -491,6 +498,7 @@ export class Inertia_Demo extends Simulation {
                             this.goRight = !this.goRight;
                             this.changeDirection = true;
                             this.score += 1;
+                            this.scoreElement = document.getElementById("scoreToUpdate").innerHTML = "<b>Current Score:</b> " + this.score;
                         } else {
                             this.game_over = true;
                         }
@@ -501,6 +509,7 @@ export class Inertia_Demo extends Simulation {
                             this.goRight = !this.goRight;
                             this.changeDirection = true;
                             this.score += 1;
+                            this.scoreElement = document.getElementById("scoreToUpdate").innerHTML = "<b>Current Score:</b> " + this.score;
                         } else {
                             this.game_over = true;
                         }
@@ -510,6 +519,7 @@ export class Inertia_Demo extends Simulation {
                             this.goRight = !this.goRight;
                             this.changeDirection = true;
                             this.score += 1;
+                            this.scoreElement = document.getElementById("scoreToUpdate").innerHTML = "<b>Current Score:</b> " + this.score;
                         } else {
                             this.game_over = true;
                         }
@@ -541,6 +551,7 @@ export class Inertia_Demo extends Simulation {
                         this.goRight = !this.goRight;
                         this.changeDirection = true;
                         this.score += 1;
+                        this.scoreElement = document.getElementById("scoreToUpdate").innerHTML = "<b>Current Score:</b> " + this.score;
                     } else {
                         this.game_over = true;
                     }
@@ -549,6 +560,7 @@ export class Inertia_Demo extends Simulation {
                         this.goRight = !this.goRight;
                         this.changeDirection = true;
                         this.score += 1;
+                        this.scoreElement = document.getElementById("scoreToUpdate").innerHTML = "<b>Current Score:</b> " + this.score;
                     } else {
                         this.game_over = true;
                     }
@@ -558,6 +570,7 @@ export class Inertia_Demo extends Simulation {
                             this.goRight = !this.goRight;
                             this.changeDirection = true;
                             this.score += 1;
+                            this.scoreElement = document.getElementById("scoreToUpdate").innerHTML = "<b>Current Score:</b> " + this.score;
                         } else {
                             this.game_over = true;
                         }
@@ -568,6 +581,7 @@ export class Inertia_Demo extends Simulation {
                             this.goRight = !this.goRight;
                             this.changeDirection = true;
                             this.score += 1;
+                            this.scoreElement = document.getElementById("scoreToUpdate").innerHTML = "<b>Current Score:</b> " + this.score;
                         } else {
                             this.game_over = true;
                         }
@@ -577,6 +591,7 @@ export class Inertia_Demo extends Simulation {
                             this.goRight = !this.goRight;
                             this.changeDirection = true;
                             this.score += 1;
+                            this.scoreElement = document.getElementById("scoreToUpdate").innerHTML = "<b>Current Score:</b> " + this.score;
                         } else {
                             this.game_over = true;
                         }
@@ -592,6 +607,7 @@ export class Inertia_Demo extends Simulation {
                         this.goRight = !this.goRight;
                         this.changeDirection = true;
                         this.score += 1;
+                        this.scoreElement = document.getElementById("scoreToUpdate").innerHTML = "<b>Current Score:</b> " + this.score;
                     } else {
                         this.game_over = true;
                     }
@@ -600,6 +616,7 @@ export class Inertia_Demo extends Simulation {
                         this.goRight = !this.goRight;
                         this.changeDirection = true;
                         this.score += 1;
+                        this.scoreElement = document.getElementById("scoreToUpdate").innerHTML = "<b>Current Score:</b> " + this.score;
                     } else {
                         this.game_over = true;
                     }
@@ -609,6 +626,7 @@ export class Inertia_Demo extends Simulation {
                             this.goRight = !this.goRight;
                             this.changeDirection = true;
                             this.score += 1;
+                            this.scoreElement = document.getElementById("scoreToUpdate").innerHTML = "<b>Current Score:</b> " + this.score;
                         } else {
                             this.game_over = true;
                         }
@@ -619,6 +637,7 @@ export class Inertia_Demo extends Simulation {
                             this.goRight = !this.goRight;
                             this.changeDirection = true;
                             this.score += 1;
+                            this.scoreElement = document.getElementById("scoreToUpdate").innerHTML = "<b>Current Score:</b> " + this.score;
                         } else {
                             this.game_over = true;
                         }
@@ -628,6 +647,7 @@ export class Inertia_Demo extends Simulation {
                             this.goRight = !this.goRight;
                             this.changeDirection = true;
                             this.score += 1;
+                            this.scoreElement = document.getElementById("scoreToUpdate").innerHTML = "<b>Current Score:</b> " + this.score;
                         } else {
                             this.game_over = true;
                         }
