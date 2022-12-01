@@ -3,69 +3,6 @@ import {defs, tiny} from './common.js';
 // Pull these names into this module's scope for convenience:
 const {vec3, unsafe3, vec4, color, Mat4, Light, Shape, Material, Shader, Texture, Scene} = tiny;
 
-export class Simulation extends Scene {
-    // **Simulation** manages the stepping of simulation time.  Subclass it when making
-    // a Scene that is a physics demo.  This technique is careful to totally decouple
-    // the simulation from the frame rate (see below).
-    constructor() {
-        super();
-        Object.assign(this, {time_accumulator: 0, time_scale: 1, t: 0, dt: 1 / 20, bodies: [], steps_taken: 0});
-    }
-
-    simulate(frame_time) {
-        // simulate(): Carefully advance time according to Glenn Fiedler's
-        // "Fix Your Timestep" blog post.
-        // This line gives ourselves a way to trick the simulator into thinking
-        // that the display framerate is running fast or slow:
-        frame_time = this.time_scale * frame_time;
-
-        // Avoid the spiral of death; limit the amount of time we will spend
-        // computing during this timestep if display lags:
-        this.time_accumulator += Math.min(frame_time, 0.1);
-        // Repeatedly step the simulation until we're caught up with this frame:
-        while (Math.abs(this.time_accumulator) >= this.dt) {
-            // Single step of the simulation for all bodies:
-            this.update_state(this.dt);
-            for (let b of this.bodies)
-                b.advance(this.dt);
-            // Following the advice of the article, de-couple
-            // our simulation time from our frame rate:
-            this.t += Math.sign(frame_time) * this.dt;
-            this.time_accumulator -= Math.sign(frame_time) * this.dt;
-            this.steps_taken++;
-        }
-        // Store an interpolation factor for how close our frame fell in between
-        // the two latest simulation time steps, so we can correctly blend the
-        // two latest states and display the result.
-        let alpha = this.time_accumulator / this.dt;
-        for (let b of this.bodies) b.blend_state(alpha);
-    }
-
-    make_control_panel() {
-        // make_control_panel(): Create the buttons for interacting with simulation time.
-        this.key_triggered_button("Speed up time", ["Shift", "T"], () => this.time_scale *= 5);
-        this.key_triggered_button("Slow down time", ["t"], () => this.time_scale /= 5);
-        this.new_line();
-        this.live_string(box => {
-            box.textContent = "Time scale: " + this.time_scale
-        });
-        this.new_line();
-        this.live_string(box => {
-            box.textContent = "Fixed simulation time step size: " + this.dt
-        });
-        this.new_line();
-        this.live_string(box => {
-            box.textContent = this.steps_taken + " timesteps were taken so far."
-        });
-    }
-
-    update_state(dt)      // update_state(): Your subclass of Simulation has to override this abstract function.
-    {
-        throw "Override this"
-    }
-}
-
-
 export class Test_Data {
     // **Test_Data** pre-loads some Shapes and Textures that other Scenes can borrow.
     constructor() {
@@ -94,15 +31,9 @@ export class Test_Data {
 
         };
     }
-
-    random_shape(shape_list = this.shapes) {
-        // random_shape():  Extract a random shape from this.shapes.
-        const shape_names = Object.keys(shape_list);
-        return shape_list[shape_names[~~(shape_names.length * Math.random())]]
-    }
 }
 
-export class Wall extends Simulation{
+export class Wall extends Scene{
     constructor(x, y, z, scale, color, up, low) {
         super();
         this.wallx = x;
@@ -115,7 +46,7 @@ export class Wall extends Simulation{
     }
 }
 
-export class Inertia_Demo extends Simulation {
+export class Inertia_Demo extends Scene {
     // ** Inertia_Demo** demonstration: This scene lets random initial momentums
     // carry several bodies until they fall due to gravity and bounce.
     constructor() {
@@ -169,57 +100,8 @@ export class Inertia_Demo extends Simulation {
         this.leftWalls = [new Wall(), new Wall(), new Wall(), new Wall()];
     }
 
-    move_left() {
-        this.ball_matrix = this.ball_matrix.times(Mat4.translation(0,2,0));
-    }
-
-    move_right() {
-        this.ball_matrix = this.ball_matrix.times(Mat4.translation(0,-2,0));
-    }
-
-    move_up() {
-        this.ball_matrix = this.ball_matrix.times(Mat4.translation(2,0,0));
-    }
-
-    move_down() {
-        this.ball_matrix = this.ball_matrix.times(Mat4.translation(-2,0,0));
-    }
-
-    // bounce(context, program_state){
-    //     // const t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000;
-    //     // // let ball_angle=-Math.PI*t;
-    //     // let ball_angle = Math.PI / 2 + Math.sin(3 * t + Math.PI / 2);
-    //     // if (t <= 0.9) {
-    //     //     ball_angle = Math.PI / 2 + Math.sin(3 * t + Math.PI / 2);
-    //     // } else {
-    //     //     ball_angle = Math.PI / 2 + Math.sin(3 * 0.9 + Math.PI / 2)
-    //     // }
-    //     // this.ball_matrix = this.ball_matrix.times(Mat4.rotation(-ball_angle, 0, 0, 1)).times(Mat4.translation(0, 3 + 5 * t, 6)).times(Mat4.rotation(Math.PI, 0, 0, 1))
-    //     //     .times(Mat4.scale(1, 1, 1));
-    //
-    // }
     random_color() {
         return this.material.original.override(color(.6, .6 * Math.random(), .6 * Math.random(), 1));
-    }
-
-    update_state(dt) {
-        // update_state():  Override the base time-stepping code to say what this particular
-        // scene should do to its bodies every frame -- including applying forces.
-        // Generate additional moving bodies if there ever aren't enough:
-        while (this.bodies.length < 150)
-            this.bodies.push(new Body(this.data.random_shape(), this.random_color(), vec3(1, 1 + Math.random(), 1))
-                .emplace(Mat4.translation(...vec3(0, 15, 0).randomized(10)),
-                    vec3(0, -1, 0).randomized(2).normalized().times(3), Math.random()));
-
-        for (let b of this.bodies) {
-            // Gravity on Earth, where 1 unit in world space = 1 meter:
-            b.linear_velocity[1] += dt * -9.8;
-            // If about to fall through floor, reverse y velocity:
-            if (b.center[1] < -8 && b.linear_velocity[1] < 0)
-                b.linear_velocity[1] *= -.8;
-        }
-        // Delete bodies that stop or stray too far away:
-        this.bodies = this.bodies.filter(b => b.center.norm() < 50 && b.linear_velocity.norm() > 2);
     }
 
     generateWalls(context, program_state){
@@ -352,10 +234,26 @@ export class Inertia_Demo extends Simulation {
                 this.bounced = false;
             }
         );
-        this.key_triggered_button("right", ["d"], () => this.move_right());
-        this.key_triggered_button("left", ["a"], () => this.move_left());
-        this.key_triggered_button("up", ["w"], () => this.move_up());
-        this.key_triggered_button("down", ["s"], () => this.move_down());
+        this.key_triggered_button("restart", ["r"], () => {
+            this.game_started=false;
+            this.game_over=false;
+            this.goRight = true;
+            this.bounced = true;
+            this.score=0;
+            this.x = 0;
+            this.y = 3;
+            this.z = 6;
+            this.score = 0;
+            this.scoreElement = document.getElementById("scoreToUpdate").innerHTML = "<b>Current Score:</b> " + this.score;
+            this.count = 0;
+            this.changeDirection = false;
+            this.rightWalls = [new Wall(), new Wall(), new Wall(), new Wall()];
+            this.leftWalls = [new Wall(), new Wall(), new Wall(), new Wall()];
+            this.t = 0;
+            this.ballcolor = this.colors[0];
+            this.display();
+            }
+        );
     }
 
     display(context, program_state) {
@@ -363,8 +261,8 @@ export class Inertia_Demo extends Simulation {
         // super.display(context, program_state);
 
         if (!context.scratchpad.controls) {
-            this.children.push(context.scratchpad.controls = new defs.Movement_Controls());
-            this.children.push(new defs.Program_State_Viewer());
+            // this.children.push(context.scratchpad.controls = new defs.Movement_Controls());
+            // this.children.push(new defs.Program_State_Viewer());
             program_state.set_camera(Mat4.translation(0, 0, -45).times(Mat4.rotation(-0.5, 0.5, 0,0)));    // Locate the camera here (inverted matrix).   // Locate the camera here (inverted matrix).
         }
         program_state.projection_transform = Mat4.perspective(Math.PI / 4, context.width / context.height, 1, 500);
